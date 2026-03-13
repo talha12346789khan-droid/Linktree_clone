@@ -1,12 +1,41 @@
 "use client";
 import { ToastContainer, toast } from "react-toastify";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 const Generate = () => {
-   const [handel, sethandel] = useState("");
-   const [linkName, setLinkName] = useState("");
-  const [linkUrl, setLinkUrl] = useState("");
+   const searchParams = useSearchParams();
+   const [handel, sethandel] = useState(searchParams.get("handel") );
+   const [links, setLinks] = useState([{ name: "", url: "" }]);
   const [linkPicture, setLinkPicture] = useState("");
+
+  const addNewLink = () => {
+    setLinks([...links, { name: "", url: "" }]);
+  };
+
+  const updateLink = (index, field, value) => {
+    const updatedLinks = [...links];
+    updatedLinks[index][field] = value;
+    setLinks(updatedLinks);
+  };
+
+  const submitAllLinks = async () => {
+    if (!handel) {
+      toast("Please fill in your handle");
+      return;
+    }
+    for (let i = 0; i < links.length; i++) {
+      if (links[i].name && links[i].url) {
+        await addLink(links[i].url, handel, links[i].name);
+      }
+    }
+    setLinks([{ name: "", url: "" }]);
+  };
+
+  const isFormValid = () => {
+    if (!handel) return false;
+    return links.some(link => link.name && link.url);
+  };
 
 
   const addLink = async (link, handel, name) => {
@@ -15,7 +44,7 @@ const Generate = () => {
     const raw = JSON.stringify({
       Link: link,
       Linkname: name,
-      Handel: handel,
+      handel: handel,
       action: "add",
     });
     const requestOptions = {
@@ -26,10 +55,14 @@ const Generate = () => {
     };
    const r = await fetch("http://localhost:3000/api/add", requestOptions)
      const result = await r.json()
-     toast(result.message)
-     setLinkName("")
-     setLinkUrl("")
-   
+    if(result.success){
+        toast.success(result.message)
+        return true;
+    }
+    else{
+     toast.error(result.message)
+     return false;
+    }
   };
 
   return (
@@ -66,35 +99,37 @@ const Generate = () => {
             />
           </div>
 
-          {/* Link Name Input */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Link Name
-            </label>
-            <input
-              type="text"
-              placeholder="e.g., My Portfolio"
-              value={linkName || ""}
-              onChange={e => setLinkName(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
-          </div>
+          {/* Dynamic Link Inputs */}
+          {links.map((link, index) => (
+            <div key={index}>
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Link Name {index + 1}
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g., My Portfolio"
+                  value={link.name}
+                  onChange={e => updateLink(index, "name", e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+              </div>
 
-          {/* Link URL Input */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Link URL
-            </label>
-            <input
-            
-              type="text"
-              placeholder="https://example.com"
-              value={linkUrl || ""}
-              onChange={e => setLinkUrl(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
-          </div>
-          <button  onClick={ ()=> addLink(handel,linkName,linkUrl)} className="w-fit bg-linear-to-r from-purple-600 to-pink-600 text-white font-bold py-2 px-2 mb-3 rounded-lg hover:shadow-lg transform hover:scale-105 transition duration-200">
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Link URL {index + 1}
+                </label>
+                <input
+                  type="text"
+                  placeholder="https://example.com"
+                  value={link.url}
+                  onChange={e => updateLink(index, "url", e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+          ))}
+          <button onClick={addNewLink} className="w-fit bg-linear-to-r from-purple-600 to-pink-600 text-white font-bold py-2 px-2 mb-3 rounded-lg hover:shadow-lg transform hover:scale-105 transition duration-200">
             Add Link
           </button>
 
@@ -113,7 +148,15 @@ const Generate = () => {
           </div>
 
           {/* Add Link Button */}
-          <button className="w-full bg-linear-to-r from-purple-600 to-pink-600 text-white font-bold py-3 rounded-lg hover:shadow-lg transform hover:scale-105 transition duration-200">
+            <button 
+              disabled={!isFormValid()}
+              onClick={submitAllLinks} 
+              className={`w-full font-bold py-3 rounded-lg transition duration-200 ${
+                isFormValid()
+                  ? "bg-linear-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg transform hover:scale-105 cursor-pointer"
+                  : "bg-gray-400 text-gray-600 cursor-not-allowed opacity-60"
+              }`}
+            >
             Add your bitlink
           </button>
         </div>
