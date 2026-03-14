@@ -24,12 +24,14 @@ const Generate = () => {
       toast("Please fill in your handle");
       return;
     }
-    for (let i = 0; i < links.length; i++) {
-      if (links[i].name && links[i].url) {
-        await addLink(links[i].url, handel, links[i].name);
-      }
+    const validLinks = links.filter(link => link.name && link.url);
+    if (validLinks.length === 0) {
+      toast("Please add at least one link");
+      return;
     }
+    await addLinks(validLinks, handel, linkPicture);
     setLinks([{ name: "", url: "" }]);
+    setLinkPicture("");
   };
 
   const isFormValid = () => {
@@ -38,14 +40,13 @@ const Generate = () => {
   };
 
 
-  const addLink = async (link, handel, name) => {
+  const addLinks = async (linksArray, handel, picture) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     const raw = JSON.stringify({
-      Link: link,
-      Linkname: name,
+      links: linksArray,
       handel: handel,
-      action: "add",
+      picture: picture,
     });
     const requestOptions = {
       method: "POST",
@@ -53,8 +54,8 @@ const Generate = () => {
       body: raw,
       redirect: "follow",
     };
-   const r = await fetch("http://localhost:3000/api/add", requestOptions)
-     const result = await r.json()
+    const r = await fetch("http://localhost:3000/api/add", requestOptions)
+    const result = await r.json()
     if(result.success){
         toast.success(result.message)
         return true;
@@ -141,8 +142,8 @@ const Generate = () => {
             <input
              value={linkPicture || ""}
               onChange={e => setLinkPicture(e.target.value)}
-              type="file"
-              accept="image/*"
+              type="text"
+              placeholder="Enter image URL for your link"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700"
             />
           </div>
