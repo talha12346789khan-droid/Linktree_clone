@@ -13,7 +13,7 @@ router.push(`/generate?handel=${text}`)
 
   return (
    <main>
-    <section className="bg-[#d2e823] min-h-[100vh] grid grid-cols-2">
+    <section className="bg-[#d2e823] min-h-[100vh] grid grid-cols-2 pt-32">
    
     <div className="  flex flex-col justify-center  ml-[10vw]">
       <p className= "text-cyan-800 text-7xl font-bold">A link in bio </p>

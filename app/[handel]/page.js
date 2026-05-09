@@ -20,11 +20,11 @@ export default async function Page({ params }) {
   return (
     <div className="flex min-h-screen  justify-center bg-cyan-800">
       <div className=" photo gap-4 flex justify-center items-center flex-col absolute top-70  rounded-full">
-        <img
+       {item.picture &&( <img
           className="rounded-full  my-5 "
           width={150}
           src={item.picture}
-        ></img>
+        ></img>)}
 
         <span className="font-bold my-10 text-white text-2xl ">
           @{item.handel}

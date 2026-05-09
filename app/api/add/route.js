@@ -1,7 +1,20 @@
 import clientPromise from "@/lib/magodb"
+import { auth } from "@/lib/auth"
 
 export async function POST(request) {
   try {
+    // Get session to verify user is authenticated
+    const session = await auth()
+    
+    if (!session || !session.user) {
+      return Response.json({
+        success: false,
+        error: true,
+        message: "You must be logged in!",
+        result: null
+      }, { status: 401 })
+    }
+
     const body = await request.json()
     console.log(body)
 
@@ -21,11 +34,15 @@ export async function POST(request) {
       })
     }
 
-    // Insert new document
+    // Insert new document with user info
     const result = await collection.insertOne({
       handel: body.handel,
       picture: body.picture,
-      links: body.links
+      links: body.links,
+      userId: session.user.id,
+      userEmail: session.user.email,
+      createdAt: new Date(),
+      updatedAt: new Date()
     })
 
     return Response.json({

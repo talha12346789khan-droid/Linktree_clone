@@ -1,13 +1,68 @@
 "use client";
 import { ToastContainer, toast } from "react-toastify";
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 
 const Generate = () => {
+   const router = useRouter();
+   const { data: session, status } = useSession();
    const searchParams = useSearchParams();
    const [handel, sethandel] = useState(searchParams.get("handel") );
    const [links, setLinks] = useState([{ name: "", url: "" }]);
-  const [linkPicture, setLinkPicture] = useState("");
+   const [linkPicture, setLinkPicture] = useState("");
+   const [isLoading, setIsLoading] = useState(false);
+   const [isEditing, setIsEditing] = useState(false);
+
+   // Redirect to sign-in if not authenticated
+   useEffect(() => {
+     if (status === "unauthenticated") {
+       router.push("/auth/signin?callbackUrl=/generate");
+     }
+   }, [status, router]);
+
+   // Fetch existing handle data if it exists
+   useEffect(() => {
+     const checkHandle = async () => {
+       if (handel) {
+         // If handle is provided via URL param, fetch it
+         try {
+           setIsLoading(true);
+           const response = await fetch(`/api/edit?handel=${handel}`);
+           const result = await response.json();
+           if (result.success) {
+             // Handle exists, load existing data
+             setLinks(result.result.links || [{ name: "", url: "" }]);
+             setLinkPicture(result.result.picture || "");
+             setIsEditing(true);
+           }
+         } catch (error) {
+           console.log("Handle is new");
+         } finally {
+           setIsLoading(false);
+         }
+       } else if (status === "authenticated") {
+         // If no handle param but user is authenticated, fetch their handle
+         try {
+           setIsLoading(true);
+           const response = await fetch(`/api/user/handle`);
+           const result = await response.json();
+           if (result.success && result.result) {
+             // User has an existing handle, load it
+             sethandel(result.result.handel);
+             setLinks(result.result.links || [{ name: "", url: "" }]);
+             setLinkPicture(result.result.picture || "");
+             setIsEditing(true);
+           }
+         } catch (error) {
+           console.log("No existing handle for user");
+         } finally {
+           setIsLoading(false);
+         }
+       }
+     };
+     checkHandle();
+   }, [handel, status]);
 
   const addNewLink = () => {
     setLinks([...links, { name: "", url: "" }]);
@@ -29,9 +84,14 @@ const Generate = () => {
       toast("Please add at least one link");
       return;
     }
-    await addLinks(validLinks, handel, linkPicture);
-    setLinks([{ name: "", url: "" }]);
-    setLinkPicture("");
+    
+    if (isEditing) {
+      await editLinks(validLinks, handel, linkPicture);
+    } else {
+      await addLinks(validLinks, handel, linkPicture);
+      setLinks([{ name: "", url: "" }]);
+      setLinkPicture("");
+    }
   };
 
   const isFormValid = () => {
@@ -66,19 +126,97 @@ const Generate = () => {
     }
   };
 
+  const editLinks = async (linksArray, handel, picture) => {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    const raw = JSON.stringify({
+      links: linksArray,
+      handel: handel,
+      picture: picture,
+    });
+    const requestOptions = {
+      method: "PUT",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+    const r = await fetch("/api/edit", requestOptions)
+    const result = await r.json()
+    if(result.success){
+        toast.success(result.message)
+        return true;
+    }
+    else{
+     toast.error(result.message)
+     return false;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-linear-to-br from-purple-900 via-purple-800 to-pink-600 p-6">
+    <div className="min-h-screen bg-linear-to-br from-purple-900 via-purple-800 to-pink-600 p-6 pt-40">
       <ToastContainer />
+      
+      {/* Loading state */}
+      {status === "loading" && (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-white text-2xl">Loading...</div>
+        </div>
+      )}
+
+      {/* Authentication required state */}
+      {status === "unauthenticated" && (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-white text-2xl">Redirecting to login...</div>
+        </div>
+      )}
+
+      {/* Main content - only show when authenticated */}
+      {status === "authenticated" && (
       <div className=" my-10 max-w-2xl mx-auto">
+        {/* User Info Header */}
+        <div className="flex justify-between items-center mb-8 bg-white rounded-lg p-4 shadow-lg">
+          <div>
+            <p className="text-gray-700 font-semibold">Logged in as:</p>
+            <p className="text-purple-600 font-bold text-lg">{session?.user?.email}</p>
+            {isEditing && handel && (
+              <p className="text-gray-600 text-sm mt-1">
+                Handle: <span className="font-bold">@{handel}</span>
+              </p>
+            )}
+          </div>
+          <div className="flex gap-2">
+            {isEditing && handel && (
+              <button
+                onClick={() => window.open(`/${handel}`, '_blank')}
+                className="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition"
+              >
+                View Profile
+              </button>
+            )}
+            <button
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
         {/* Header */}
         <div className="my-50 text-center mb-10">
           <h1 className="text-4xl font-bold text-white mb-2">
-            Claim Your LinkTree
+            {isEditing ? "Edit Your LinkTree" : "Claim Your LinkTree"}
           </h1>
           <p className="text-purple-200">
-            Add your links and customize your profile
+            {isEditing ? "Update your links and profile" : "Add your links and customize your profile"}
           </p>
         </div>
+
+        {/* Loading State */}
+        {isLoading && (
+          <div className="bg-white rounded-lg shadow-2xl p-8 mb-8 text-center">
+            <p className="text-gray-600">Loading your profile...</p>
+          </div>
+        )}
 
         {/* Form Container */}
         <div className="bg-white rounded-lg shadow-2xl p-8 mb-8">
@@ -90,13 +228,17 @@ const Generate = () => {
           <div className="mb-6">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Choose Your Handle
+              {isEditing && <span className="text-gray-500 text-xs ml-2">(Cannot be changed)</span>}
             </label>
             <input
             onChange={e=>{sethandel(e.target.value)}}
+              disabled={isEditing}
               type="text"
               value={handel || ""}
               placeholder="e.g., @johndoe"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                isEditing ? 'bg-gray-100 cursor-not-allowed' : ''
+              }`}
             />
           </div>
 
@@ -158,7 +300,7 @@ const Generate = () => {
                   : "bg-gray-400 text-gray-600 cursor-not-allowed opacity-60"
               }`}
             >
-            Add your bitlink
+            {isEditing ? "Update your bitlink" : "Add your bitlink"}
           </button>
         </div>
 
@@ -170,6 +312,7 @@ const Generate = () => {
           </p>
         </div>
       </div>
+      )}
     </div>
   );
 };

@@ -4,15 +4,19 @@ import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useSession, signIn, signOut } from 'next-auth/react'
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const searchRef = useRef(null)
+  const profileRef = useRef(null)
   const router = useRouter()
+  const { data: session, status } = useSession()
 
   // Search handles as user types
   useEffect(() => {
@@ -45,6 +49,9 @@ const Navbar = () => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setIsSearchOpen(false)
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsProfileOpen(false)
       }
     }
 
@@ -131,8 +138,49 @@ const Navbar = () => {
           )}
         </div>
 
-        <button className='cursor-pointer bg-slate-300 px-5 py-2 rounded-lg hover:bg-slate-400 transition'>Sign In</button>
-        <button className='cursor-pointer bg-black text-white px-5 py-2 rounded-full hover:bg-gray-800 transition'>Sign up free</button>
+        {status === 'authenticated' ? (
+          <div ref={profileRef} className='relative'>
+            <button
+              onClick={() => setIsProfileOpen(!isProfileOpen)}
+              className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-2 px-6 rounded-full hover:shadow-lg transition'
+            >
+              My Profile
+            </button>
+
+            {/* Profile Dropdown */}
+            {isProfileOpen && (
+              <div className='absolute right-0 top-12 w-64 bg-white shadow-2xl rounded-lg z-50 border border-gray-200 max-h-64 overflow-y-auto'>
+                <div className='p-4 border-b border-gray-200'>
+                  <p className='text-gray-600 text-sm'>Logged in as:</p>
+                  <p className='text-purple-600 font-bold text-sm mt-1 truncate'>{session?.user?.email}</p>
+                </div>
+                <div className='p-3 space-y-2'>
+                  <Link href="/generate">
+                    <button className='w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded transition text-sm'>
+                      ✏️ My Links
+                    </button>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      signOut({ callbackUrl: "/" })
+                      setIsProfileOpen(false)
+                    }}
+                    className='w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded transition font-semibold text-sm'
+                  >
+                    🚪 Logout
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <button 
+            onClick={() => signIn()}
+            className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-2 px-6 rounded-full hover:shadow-lg transition'
+          >
+            Sign In
+          </button>
+        )}
       </div>
 
       {/* Mobile Menu Button */}
@@ -163,8 +211,37 @@ const Navbar = () => {
             <li className='text-lg hover:font-bold transition px-4 py-2 hover:bg-gray-100 rounded'>Learn</li>
             <li className='text-lg hover:font-bold transition px-4 py-2 hover:bg-gray-100 rounded'>Pricing</li>
             <hr className='my-2' />
-            <button className='cursor-pointer bg-slate-300 px-5 py-2 rounded-lg w-full hover:bg-slate-400 transition'>Sign In</button>
-            <button className='cursor-pointer bg-black text-white px-5 py-2 rounded-full w-full hover:bg-gray-800 transition'>Sign up free</button>
+            {status === 'authenticated' ? (
+              <div className='px-4 py-3'>
+                <div className='bg-purple-50 border border-purple-200 rounded-lg p-3 mb-3'>
+                  <p className='text-gray-600 text-xs'>Logged in as:</p>
+                  <p className='text-purple-600 font-bold text-sm mt-1 truncate'>{session?.user?.email}</p>
+                </div>
+                <Link href="/generate" className='block mb-2'>
+                  <button className='cursor-pointer bg-slate-300 px-5 py-2 rounded-lg w-full hover:bg-slate-400 transition'>
+                    ✏️ My Links
+                  </button>
+                </Link>
+                <button 
+                  onClick={() => {
+                    signOut({ callbackUrl: "/" })
+                    setIsMenuOpen(false)
+                  }}
+                  className='cursor-pointer bg-red-600 text-white px-5 py-2 rounded-lg w-full hover:bg-red-700 transition font-semibold'
+                >
+                  🚪 Logout
+                </button>
+              </div>
+            ) : (
+              <div className='px-4 py-3'>
+                <button 
+                  onClick={() => signIn()}
+                  className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-2 px-6 rounded-full w-full hover:shadow-lg transition'
+                >
+                  Sign In
+                </button>
+              </div>
+            )}
           </ul>
         </div>
       )}
