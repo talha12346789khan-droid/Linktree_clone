@@ -24,7 +24,7 @@ export async function PUT(request) {
     const collection = db.collection("links")
 
     // Find the handle and verify ownership
-    const existingHandle = await collection.findOne({ handel: body.handel })
+    const existingHandle = await collection.findOne({ handle: body.handle })
 
     if (!existingHandle) {
       return Response.json({
@@ -45,9 +45,9 @@ export async function PUT(request) {
       }, { status: 403 })
     }
 
-    // Update existing document by handel
+    // Update existing document by handle
     const result = await collection.updateOne(
-      { handel: body.handel },
+      { handle: body.handle },
       {
         $set: {
           picture: body.picture,
@@ -98,9 +98,9 @@ export async function GET(request) {
     }
 
     const { searchParams } = new URL(request.url)
-    const handel = searchParams.get("handel")
+    const handle = searchParams.get("handle")
 
-    if (!handel) {
+    if (!handle) {
       return Response.json({
         success: false,
         error: true,
@@ -114,7 +114,7 @@ export async function GET(request) {
     const collection = db.collection("links")
 
     const item = await collection.findOne({
-      handel: { $regex: `^${handel}$`, $options: "i" }
+      handle: { $regex: `^${handle}$`, $options: "i" }
     })
 
     if (!item) {

@@ -5,18 +5,48 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useSession, signIn, signOut } from 'next-auth/react'
+import { toast, ToastContainer } from 'react-toastify'
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [isProductDropdown, setIsProductDropdown] = useState(false)
+  const [isTemplatesDropdown, setIsTemplatesDropdown] = useState(false)
+  const [isMarketplaceDropdown, setIsMarketplaceDropdown] = useState(false)
+  const [isLearnDropdown, setIsLearnDropdown] = useState(false)
+  const [isPricingDropdown, setIsPricingDropdown] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  const [userHandle, setUserHandle] = useState(null)
   const searchRef = useRef(null)
   const profileRef = useRef(null)
+  const productRef = useRef(null)
+  const templatesRef = useRef(null)
+  const marketplaceRef = useRef(null)
+  const learnRef = useRef(null)
+  const pricingRef = useRef(null)
   const router = useRouter()
   const { data: session, status } = useSession()
+
+  // Fetch user's handle on mount
+  useEffect(() => {
+    if (status === 'authenticated') {
+      const fetchUserHandle = async () => {
+        try {
+          const response = await fetch('/api/user/handle')
+          const data = await response.json()
+          if (data.success && data.result) {
+            setUserHandle(data.result.handle)
+          }
+        } catch (error) {
+          console.error('Error fetching user handle:', error)
+        }
+      }
+      fetchUserHandle()
+    }
+  }, [status])
 
   // Search handles as user types
   useEffect(() => {
@@ -53,20 +83,37 @@ const Navbar = () => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setIsProfileOpen(false)
       }
+      if (productRef.current && !productRef.current.contains(event.target)) {
+        setIsProductDropdown(false)
+      }
+      if (templatesRef.current && !templatesRef.current.contains(event.target)) {
+        setIsTemplatesDropdown(false)
+      }
+      if (marketplaceRef.current && !marketplaceRef.current.contains(event.target)) {
+        setIsMarketplaceDropdown(false)
+      }
+      if (learnRef.current && !learnRef.current.contains(event.target)) {
+        setIsLearnDropdown(false)
+      }
+      if (pricingRef.current && !pricingRef.current.contains(event.target)) {
+        setIsPricingDropdown(false)
+      }
     }
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const handleSearchSelect = (handel) => {
-    router.push(`/${handel}`)
+  const handleSearchSelect = (handle) => {
+    router.push(`/${encodeURIComponent(handle)}`)
     setIsSearchOpen(false)
     setSearchQuery('')
   }
 
   return (
-    <nav className='fixed bg-white rounded-full md:rounded-full p-2 md:py-4 w-full md:w-[80vw] top-10 md:right-[10vw] md:left-auto left-0 flex justify-between items-center z-50'>
+    <>
+      <ToastContainer />
+      <nav className='fixed bg-white rounded-full md:rounded-full p-2 md:py-4 w-full md:w-[80vw] top-10 md:right-[10vw] md:left-auto left-0 flex justify-between items-center z-50'>
       {/* Logo */}
       <div className='logo flex items-center mx-2 md:mx-8 shrink-0'>
         <Link href="/">
@@ -83,11 +130,155 @@ const Navbar = () => {
       {/* Menu Items - Hidden on mobile, visible on md and up */}
       <div className='hidden md:flex items-center ml-10 flex-1'>
         <ul className='flex gap-8 text-lg cursor-pointer'>
-          <li className='text-lg md:text-xl hover:font-bold transition'>Product</li>
-          <li className='text-lg md:text-xl hover:font-bold transition'>Templates</li>
-          <li className='text-lg md:text-xl hover:font-bold transition'>Marketplace</li>
-          <li className='text-lg md:text-xl hover:font-bold transition'>Learn</li>
-          <li className='text-lg md:text-xl hover:font-bold transition'>Pricing</li>
+          <li 
+            ref={productRef}
+            onMouseEnter={() => setIsProductDropdown(true)}
+            onMouseLeave={() => setIsProductDropdown(false)}
+            className='relative group'
+          >
+            <button
+              className='text-lg md:text-xl hover:font-bold transition flex items-center gap-2'
+            >
+              Product
+              <svg className={`w-4 h-4 transition-transform ${isProductDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
+              </svg>
+            </button>
+            
+            {isProductDropdown && (
+              <div 
+                onMouseEnter={() => setIsProductDropdown(true)}
+                onMouseLeave={() => setIsProductDropdown(false)}
+                className='absolute left-0 mt-0 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50'>
+                <ul className='py-2'>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>📱 Mobile App</li>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🌐 Web Platform</li>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🔧 Tools & Extensions</li>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer border-t'>📚 Documentation</li>
+                </ul>
+              </div>
+            )}
+          </li>
+
+          <li 
+            ref={templatesRef}
+            onMouseEnter={() => setIsTemplatesDropdown(true)}
+            onMouseLeave={() => setIsTemplatesDropdown(false)}
+            className='relative group'
+          >
+            <button
+              className='text-lg md:text-xl hover:font-bold transition flex items-center gap-2'
+            >
+              Templates
+              <svg className={`w-4 h-4 transition-transform ${isTemplatesDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
+              </svg>
+            </button>
+            
+            {isTemplatesDropdown && (
+              <div 
+                onMouseEnter={() => setIsTemplatesDropdown(true)}
+                onMouseLeave={() => setIsTemplatesDropdown(false)}
+                className='absolute left-0 mt-0 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50'>
+                <ul className='py-2'>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🎨 Creative</li>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>💼 Business</li>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🎵 Music & Audio</li>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer border-t'>🎬 Video & Media</li>
+                </ul>
+              </div>
+            )}
+          </li>
+
+          <li 
+            ref={marketplaceRef}
+            onMouseEnter={() => setIsMarketplaceDropdown(true)}
+            onMouseLeave={() => setIsMarketplaceDropdown(false)}
+            className='relative group'
+          >
+            <button
+              className='text-lg md:text-xl hover:font-bold transition flex items-center gap-2'
+            >
+              Marketplace
+              <svg className={`w-4 h-4 transition-transform ${isMarketplaceDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
+              </svg>
+            </button>
+            
+            {isMarketplaceDropdown && (
+              <div 
+                onMouseEnter={() => setIsMarketplaceDropdown(true)}
+                onMouseLeave={() => setIsMarketplaceDropdown(false)}
+                className='absolute left-0 mt-0 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50'>
+                <ul className='py-2'>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🎯 Featured</li>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>⭐ Top Rated</li>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🆕 New Releases</li>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer border-t'>💎 Premium</li>
+                </ul>
+              </div>
+            )}
+          </li>
+
+          <li 
+            ref={learnRef}
+            onMouseEnter={() => setIsLearnDropdown(true)}
+            onMouseLeave={() => setIsLearnDropdown(false)}
+            className='relative group'
+          >
+            <button
+              className='text-lg md:text-xl hover:font-bold transition flex items-center gap-2'
+            >
+              Learn
+              <svg className={`w-4 h-4 transition-transform ${isLearnDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
+              </svg>
+            </button>
+            
+            {isLearnDropdown && (
+              <div 
+                onMouseEnter={() => setIsLearnDropdown(true)}
+                onMouseLeave={() => setIsLearnDropdown(false)}
+                className='absolute left-0 mt-0 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50'>
+                <ul className='py-2'>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>📖 Tutorials</li>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🎓 Courses</li>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>❓ FAQ</li>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer border-t'>🆘 Support</li>
+                </ul>
+              </div>
+            )}
+          </li>
+
+          <li 
+            ref={pricingRef}
+            onMouseEnter={() => setIsPricingDropdown(true)}
+            onMouseLeave={() => setIsPricingDropdown(false)}
+            className='relative group'
+          >
+            <button
+              className='text-lg md:text-xl hover:font-bold transition flex items-center gap-2'
+            >
+              Pricing
+              <svg className={`w-4 h-4 transition-transform ${isPricingDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
+              </svg>
+            </button>
+            
+            {isPricingDropdown && (
+              <div 
+                onMouseEnter={() => setIsPricingDropdown(true)}
+                onMouseLeave={() => setIsPricingDropdown(false)}
+                className='absolute left-0 mt-0 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50'>
+                <ul className='py-2'>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🆓 Free Plan</li>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>⭐ Starter</li>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🚀 Pro</li>
+                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer border-t'>👑 Enterprise</li>
+                </ul>
+              </div>
+            )}
+          </li>
         </ul>
       </div>
 
@@ -121,15 +312,30 @@ const Navbar = () => {
               )}
               {searchQuery && searchResults.length > 0 ? (
                 <ul className='max-h-64 overflow-y-auto'>
-                  {searchResults.map((result) => (
-                    <li
-                      key={result._id}
-                      onClick={() => handleSearchSelect(result.handel)}
-                      className='px-4 py-3 cursor-pointer hover:bg-gray-100 transition border-b border-gray-100 flex items-center gap-2'
-                    >
-                      <span className='text-blue-600 font-medium'>@{result.handel}</span>
-                    </li>
-                  ))}
+                  {searchResults
+                    .sort((a, b) => {
+                      // Prioritize exact match or user's own handle
+                      if (userHandle) {
+                        if (a.handle.toLowerCase() === userHandle.toLowerCase()) return -1
+                        if (b.handle.toLowerCase() === userHandle.toLowerCase()) return 1
+                      }
+                      return 0
+                    })
+                    .map((result) => {
+                      const isUserHandle = userHandle && result.handle.toLowerCase() === userHandle.toLowerCase()
+                      return (
+                        <li
+                          key={result._id}
+                          onClick={() => handleSearchSelect(result.handle)}
+                          className={`px-4 py-3 cursor-pointer hover:bg-gray-100 transition border-b border-gray-100 flex items-center gap-2 ${
+                            isUserHandle ? 'bg-blue-50 font-semibold' : ''
+                          }`}
+                        >
+                          <span className='text-blue-600 font-medium'>@{result.handle}</span>
+                          {isUserHandle && <span className='text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded'>Your Profile</span>}
+                        </li>
+                      )
+                    })}
                 </ul>
               ) : searchQuery && !isLoading ? (
                 <div className='p-4 text-center text-gray-500 text-sm'>No handlers found</div>
@@ -153,8 +359,34 @@ const Navbar = () => {
                 <div className='p-4 border-b border-gray-200'>
                   <p className='text-gray-600 text-sm'>Logged in as:</p>
                   <p className='text-purple-600 font-bold text-sm mt-1 truncate'>{session?.user?.email}</p>
+                  {userHandle && (
+                    <p className='text-gray-600 text-xs mt-2'>
+                      Handle: <span className='font-bold text-blue-600'>@{userHandle}</span>
+                    </p>
+                  )}
                 </div>
                 <div className='p-3 space-y-2'>
+                  {userHandle ? (
+                    <button
+                      onClick={() => {
+                        router.push(`/${encodeURIComponent(userHandle)}`)
+                        setIsProfileOpen(false)
+                      }}
+                      className='w-full text-left px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded transition font-semibold text-sm'
+                    >
+                      👁️ View My Profile
+                    </button>
+                  ) : (
+                    <div className='w-full px-4 py-2 bg-yellow-50 text-yellow-700 rounded text-sm'>
+                      <p className='font-semibold mb-2'>⚠️ No Handle Found</p>
+                      <p className='text-xs mb-3'>You need to create a handle first to view your profile.</p>
+                      <Link href="/generate">
+                        <button className='w-full text-center px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700 text-xs font-semibold transition'>
+                          Create Handle
+                        </button>
+                      </Link>
+                    </div>
+                  )}
                   <Link href="/generate">
                     <button className='w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded transition text-sm'>
                       ✏️ My Links
@@ -246,6 +478,7 @@ const Navbar = () => {
         </div>
       )}
     </nav>
+    </>
   )
 }
 

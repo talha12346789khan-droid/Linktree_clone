@@ -16,7 +16,7 @@ export async function GET(request) {
     // Search for handles that match the query (case insensitive)
     const results = await collection
       .find({
-        handel: { $regex: query, $options: "i" }
+        handle: { $regex: query, $options: "i" }
       })
       .limit(10)
       .toArray()

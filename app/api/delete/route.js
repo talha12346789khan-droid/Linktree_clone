@@ -1,7 +1,7 @@
 import clientPromise from "@/lib/magodb"
 import { auth } from "@/lib/auth"
 
-export async function POST(request) {
+export async function DELETE(request) {
   try {
     // Get session to verify user is authenticated
     const session = await auth()
@@ -16,56 +16,55 @@ export async function POST(request) {
     }
 
     const body = await request.json()
-    console.log(body)
+    console.log("Delete request:", body)
 
     const client = await clientPromise
     const db = client.db("bittree")
     const collection = db.collection("links")
 
-    // Check if handle already exists
-    const doc = await collection.findOne({ handle: body.handle })
+    // Find the handle and verify ownership
+    const existingHandle = await collection.findOne({ handle: body.handle })
 
-    if (doc) {
+    if (!existingHandle) {
       return Response.json({
         success: false,
         error: true,
-        message: "This handle already exists!",
+        message: "Handle not found!",
         result: null
       })
     }
 
-    // Check if user already has a handle
-    const userHandle = await collection.findOne({ userId: session.user.id })
-
-    if (userHandle) {
+    // Check if user owns this handle
+    if (existingHandle.userId !== session.user.id) {
       return Response.json({
         success: false,
         error: true,
-        message: "You already have a handle! You can only have one handle per account. Please edit your existing handle instead.",
+        message: "You don't have permission to delete this handle!",
+        result: null
+      }, { status: 403 })
+    }
+
+    // Delete the document
+    const result = await collection.deleteOne({ handle: body.handle })
+
+    if (result.deletedCount === 0) {
+      return Response.json({
+        success: false,
+        error: true,
+        message: "Failed to delete handle!",
         result: null
       })
     }
-
-    // Insert new document with user info
-    const result = await collection.insertOne({
-      handle: body.handle,
-      picture: body.picture,
-      links: body.links,
-      userId: session.user.id,
-      userEmail: session.user.email,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    })
 
     return Response.json({
       success: true,
       error: false,
-      message: "Profile created with all links!",
+      message: "Handle deleted successfully!",
       result: result
     })
 
   } catch (error) {
-    console.error("Add error:", error)
+    console.error("Delete error:", error)
 
     return Response.json({
       success: false,
