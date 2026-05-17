@@ -428,8 +428,8 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className='absolute top-full left-0 right-0 bg-white shadow-lg rounded-2xl mt-2 md:hidden'>
-          <div className='p-4 border-b border-gray-200'>
+        <div className='absolute top-full left-0 right-0 bg-white shadow-lg rounded-2xl mt-2 md:hidden max-h-[calc(100vh-120px)] overflow-y-auto'>
+          <div className='p-4 border-b border-gray-200 sticky top-0 bg-white'>
             <input
               type='text'
               placeholder='Search handlers...'
