@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "LinkTree Clone - Create Your Link in Bio",
   description: "Create your personal link in bio page with LinkTree Clone. Share all your important links in one place.",
+  icons: {
+    icon: "/images/logo.png",
+  },
 };
 
 export const viewport = {
