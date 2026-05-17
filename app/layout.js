@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -15,6 +16,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
+ 
+  verification: {
+  google: "6K3CppAo8my14wPDGqfgIHU-2kw8o646p_MUzItTz1Y",
+},
+
   title: "LinkTree Clone - Create Your Link in Bio",
   description: "Create your personal link in bio page with LinkTree Clone. Share all your important links in one place.",
   icons: {
@@ -35,9 +41,11 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
         <Providers>
-            <SpeedInsights />
+            
           <Navbar/>
           {children}
+          <SpeedInsights />
+          <Analytics />
         </Providers>
       </body>
     </html>
