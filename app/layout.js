@@ -1,3 +1,4 @@
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "../component/Navbar";
@@ -34,6 +35,7 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
         <Providers>
+            <SpeedInsights />
           <Navbar/>
           {children}
         </Providers>
