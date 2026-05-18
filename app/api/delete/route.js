@@ -35,13 +35,22 @@ export async function DELETE(request) {
     }
 
     // Check if user owns this handle
-    if (existingHandle.userId !== session.user.id) {
+    // Allow if userId matches, or if email matches (for session changes)
+    if (existingHandle.userId !== session.user.id && existingHandle.userEmail !== session.user.email) {
       return Response.json({
         success: false,
         error: true,
         message: "You don't have permission to delete this handle!",
         result: null
       }, { status: 403 })
+    }
+
+    // Update userId if it was found by email but userId doesn't match
+    if (existingHandle.userId !== session.user.id) {
+      await collection.updateOne(
+        { handle: body.handle },
+        { $set: { userId: session.user.id } }
+      )
     }
 
     // Delete the document

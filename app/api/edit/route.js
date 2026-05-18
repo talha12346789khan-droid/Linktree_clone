@@ -127,13 +127,23 @@ export async function GET(request) {
     }
 
     // Check if user owns this handle
-    if (item.userId !== session.user.id) {
+    // Allow if userId matches, or if email matches (for session changes)
+    if (item.userId !== session.user.id && item.userEmail !== session.user.email) {
       return Response.json({
         success: false,
         error: true,
         message: "You don't have permission to edit this handle!",
         result: null
       }, { status: 403 })
+    }
+
+    // Update userId if it was found by email but userId doesn't match
+    if (item.userId !== session.user.id) {
+      await collection.updateOne(
+        { _id: item._id },
+        { $set: { userId: session.user.id } }
+      )
+      item.userId = session.user.id
     }
 
     return Response.json({
