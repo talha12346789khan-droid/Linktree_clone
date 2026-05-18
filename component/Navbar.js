@@ -119,9 +119,9 @@ const Navbar = () => {
   return (
     <>
       <ToastContainer />
-      <nav className='fixed bg-white rounded-full md:rounded-full p-1.5 md:py-4 mx-2 md:mx-0 w-[calc(100%-1rem)] md:w-[80vw] top-10 md:right-[10vw] md:left-auto left-0 flex justify-between items-center z-50'>
+      <nav className='fixed bg-white rounded-full md:rounded-full p-1 md:py-3 lg:py-4 mx-2 md:mx-0 w-[calc(100%-1rem)] md:w-[85vw] top-10 md:right-[7.5vw] md:left-auto left-0 flex justify-between items-center z-50'>
       {/* Logo */}
-      <div className='logo flex items-center mx-1 md:mx-8 shrink-0'>
+      <div className='logo flex items-center mx-0.5 md:mx-3 lg:mx-8 shrink-0'>
         <Link href="/">
           <Image 
             alt='logo' 
@@ -134,8 +134,8 @@ const Navbar = () => {
       </div>
 
       {/* Menu Items - Hidden on mobile, visible on md and up */}
-      <div className='hidden md:flex items-center ml-10 flex-1'>
-        <ul className='flex gap-3 lg:gap-8 text-base lg:text-lg cursor-pointer'>
+      <div className='hidden md:flex items-center ml-6 lg:ml-10 flex-1'>
+        <ul className='flex gap-2 lg:gap-8 text-base lg:text-lg cursor-pointer'>
           <li 
             ref={productRef}
             onMouseEnter={() => setIsProductDropdown(true)}
@@ -143,10 +143,10 @@ const Navbar = () => {
             className='relative group'
           >
             <button
-              className='text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
+              className='text-xs md:text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
             >
               Product
-              <svg className={`w-3 h-3 lg:w-4 lg:h-4 transition-transform ${isProductDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <svg className={`w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 transition-transform ${isProductDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
               </svg>
             </button>
@@ -173,10 +173,10 @@ const Navbar = () => {
             className='relative group'
           >
             <button
-              className='text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
+              className='text-xs md:text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
             >
               Templates
-              <svg className={`w-3 h-3 lg:w-4 lg:h-4 transition-transform ${isTemplatesDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <svg className={`w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 transition-transform ${isTemplatesDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
               </svg>
             </button>
@@ -203,10 +203,10 @@ const Navbar = () => {
             className='relative group'
           >
             <button
-              className='text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
+              className='text-xs md:text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
             >
               Marketplace
-              <svg className={`w-3 h-3 lg:w-4 lg:h-4 transition-transform ${isMarketplaceDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <svg className={`w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 transition-transform ${isMarketplaceDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
               </svg>
             </button>
@@ -233,10 +233,10 @@ const Navbar = () => {
             className='relative group'
           >
             <button
-              className='text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
+              className='text-xs md:text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
             >
               Learn
-              <svg className={`w-3 h-3 lg:w-4 lg:h-4 transition-transform ${isLearnDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <svg className={`w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 transition-transform ${isLearnDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
               </svg>
             </button>
@@ -263,10 +263,10 @@ const Navbar = () => {
             className='relative group'
           >
             <button
-              className='text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
+              className='text-xs md:text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
             >
               Pricing
-              <svg className={`w-3 h-3 lg:w-4 lg:h-4 transition-transform ${isPricingDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <svg className={`w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 transition-transform ${isPricingDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
               </svg>
             </button>
@@ -289,16 +289,16 @@ const Navbar = () => {
       </div>
 
       {/* Desktop Buttons - Hidden on mobile */}
-      <div className='hidden md:flex buttons mr-2 lg:mr-5 gap-2 lg:gap-3 items-center'>
+      <div className='hidden md:flex buttons mr-1 md:mr-2 lg:mr-5 gap-1 md:gap-2 lg:gap-3 items-center'>
         {/* Search Bar */}
         <div ref={searchRef} className='relative'>
           <button
             onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className='cursor-pointer hover:bg-gray-200 p-1.5 lg:p-2 rounded-lg transition'
+            className='cursor-pointer hover:bg-gray-200 p-1 md:p-1.5 lg:p-2 rounded-lg transition'
             aria-label='Search'
             title='Search handlers'
           >
-            <svg className='w-4 h-4 lg:w-5 lg:h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <svg className='w-3.5 h-3.5 md:w-4 md:h-4 lg:w-5 lg:h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
               <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
             </svg>
           </button>
@@ -354,7 +354,7 @@ const Navbar = () => {
           <div ref={profileRef} className='relative'>
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-1.5 lg:py-2 px-3 lg:px-6 text-sm lg:text-base rounded-full hover:shadow-lg transition'
+              className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-1 md:py-1.5 lg:py-2 px-2 md:px-3 lg:px-6 text-xs md:text-sm lg:text-base rounded-full hover:shadow-lg transition whitespace-nowrap'
             >
               My Profile
             </button>
@@ -414,7 +414,7 @@ const Navbar = () => {
         ) : (
           <button 
             onClick={() => signIn()}
-            className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-1.5 lg:py-2 px-3 lg:px-6 text-sm lg:text-base rounded-full hover:shadow-lg transition'
+            className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-1 md:py-1.5 lg:py-2 px-2 md:px-3 lg:px-6 text-xs md:text-sm lg:text-base rounded-full hover:shadow-lg transition whitespace-nowrap'
           >
             Sign In
           </button>
