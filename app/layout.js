@@ -22,7 +22,7 @@ export const metadata = {
   google: "6K3CppAo8my14wPDGqfgIHU-2kw8o646p_MUzItTz1Y",
 },
 
-  title: "LinkTree Clone Talha - Create Your Link in Bio",
+  title: "LinkTree Clone - Create Your Link in Bio",
   description: "Create your personal link in bio page with LinkTree Clone. Share all your important links in one place.",
   icons: {
     icon: "/images/logo.png",
