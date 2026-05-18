@@ -16,6 +16,12 @@ const Navbar = () => {
   const [isMarketplaceDropdown, setIsMarketplaceDropdown] = useState(false)
   const [isLearnDropdown, setIsLearnDropdown] = useState(false)
   const [isPricingDropdown, setIsPricingDropdown] = useState(false)
+  // Mobile dropdown states
+  const [isMobileProductDropdown, setIsMobileProductDropdown] = useState(false)
+  const [isMobileTemplatesDropdown, setIsMobileTemplatesDropdown] = useState(false)
+  const [isMobileMarketplaceDropdown, setIsMobileMarketplaceDropdown] = useState(false)
+  const [isMobileLearnDropdown, setIsMobileLearnDropdown] = useState(false)
+  const [isMobilePricingDropdown, setIsMobilePricingDropdown] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [isLoading, setIsLoading] = useState(false)
@@ -437,11 +443,120 @@ const Navbar = () => {
             />
           </div>
           <ul className='flex flex-col p-4 gap-4 text-lg cursor-pointer'>
-            <li className='text-lg hover:font-bold transition px-4 py-2 hover:bg-gray-100 rounded'>Product</li>
-            <li className='text-lg hover:font-bold transition px-4 py-2 hover:bg-gray-100 rounded'>Templates</li>
-            <li className='text-lg hover:font-bold transition px-4 py-2 hover:bg-gray-100 rounded'>Marketplace</li>
-            <li className='text-lg hover:font-bold transition px-4 py-2 hover:bg-gray-100 rounded'>Learn</li>
-            <li className='text-lg hover:font-bold transition px-4 py-2 hover:bg-gray-100 rounded'>Pricing</li>
+            {/* Product Dropdown Mobile */}
+            <li className='text-lg px-4 py-2 hover:bg-gray-100 rounded'>
+              <button 
+                onClick={() => setIsMobileProductDropdown(!isMobileProductDropdown)}
+                className='w-full text-left flex justify-between items-center hover:font-bold transition'
+              >
+                <span>Product</span>
+                <svg className={`w-4 h-4 transition-transform ${isMobileProductDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
+                </svg>
+              </button>
+              {isMobileProductDropdown && (
+                <div className='mt-2 bg-gray-50 rounded-lg overflow-hidden'>
+                  <ul className='py-2'>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileProductDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>📱 Mobile App</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileProductDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🌐 Web Platform</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileProductDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🔧 Tools & Extensions</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileProductDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base border-t'>📚 Documentation</li>
+                  </ul>
+                </div>
+              )}
+            </li>
+
+            {/* Templates Dropdown Mobile */}
+            <li className='text-lg px-4 py-2 hover:bg-gray-100 rounded'>
+              <button 
+                onClick={() => setIsMobileTemplatesDropdown(!isMobileTemplatesDropdown)}
+                className='w-full text-left flex justify-between items-center hover:font-bold transition'
+              >
+                <span>Templates</span>
+                <svg className={`w-4 h-4 transition-transform ${isMobileTemplatesDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
+                </svg>
+              </button>
+              {isMobileTemplatesDropdown && (
+                <div className='mt-2 bg-gray-50 rounded-lg overflow-hidden'>
+                  <ul className='py-2'>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileTemplatesDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🎨 Creative</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileTemplatesDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>💼 Business</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileTemplatesDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🎵 Music & Audio</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileTemplatesDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base border-t'>🎬 Video & Media</li>
+                  </ul>
+                </div>
+              )}
+            </li>
+
+            {/* Marketplace Dropdown Mobile */}
+            <li className='text-lg px-4 py-2 hover:bg-gray-100 rounded'>
+              <button 
+                onClick={() => setIsMobileMarketplaceDropdown(!isMobileMarketplaceDropdown)}
+                className='w-full text-left flex justify-between items-center hover:font-bold transition'
+              >
+                <span>Marketplace</span>
+                <svg className={`w-4 h-4 transition-transform ${isMobileMarketplaceDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
+                </svg>
+              </button>
+              {isMobileMarketplaceDropdown && (
+                <div className='mt-2 bg-gray-50 rounded-lg overflow-hidden'>
+                  <ul className='py-2'>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileMarketplaceDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🎯 Featured</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileMarketplaceDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>⭐ Top Rated</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileMarketplaceDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🆕 New Releases</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileMarketplaceDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base border-t'>💎 Premium</li>
+                  </ul>
+                </div>
+              )}
+            </li>
+
+            {/* Learn Dropdown Mobile */}
+            <li className='text-lg px-4 py-2 hover:bg-gray-100 rounded'>
+              <button 
+                onClick={() => setIsMobileLearnDropdown(!isMobileLearnDropdown)}
+                className='w-full text-left flex justify-between items-center hover:font-bold transition'
+              >
+                <span>Learn</span>
+                <svg className={`w-4 h-4 transition-transform ${isMobileLearnDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
+                </svg>
+              </button>
+              {isMobileLearnDropdown && (
+                <div className='mt-2 bg-gray-50 rounded-lg overflow-hidden'>
+                  <ul className='py-2'>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileLearnDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>📖 Tutorials</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileLearnDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🎓 Courses</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileLearnDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>❓ FAQ</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileLearnDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base border-t'>🆘 Support</li>
+                  </ul>
+                </div>
+              )}
+            </li>
+
+            {/* Pricing Dropdown Mobile */}
+            <li className='text-lg px-4 py-2 hover:bg-gray-100 rounded'>
+              <button 
+                onClick={() => setIsMobilePricingDropdown(!isMobilePricingDropdown)}
+                className='w-full text-left flex justify-between items-center hover:font-bold transition'
+              >
+                <span>Pricing</span>
+                <svg className={`w-4 h-4 transition-transform ${isMobilePricingDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
+                </svg>
+              </button>
+              {isMobilePricingDropdown && (
+                <div className='mt-2 bg-gray-50 rounded-lg overflow-hidden'>
+                  <ul className='py-2'>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobilePricingDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🆓 Free Plan</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobilePricingDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>⭐ Starter</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobilePricingDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🚀 Pro</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobilePricingDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base border-t'>👑 Enterprise</li>
+                  </ul>
+                </div>
+              )}
+            </li>
             <hr className='my-2' />
             {status === 'authenticated' ? (
               <div className='px-4 py-3'>
