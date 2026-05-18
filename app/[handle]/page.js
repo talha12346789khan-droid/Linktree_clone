@@ -141,13 +141,19 @@ export default async function Page({ params }) {
           @{item.handle}
         </span>
         <div className="links w-full">
-          {item.links.map((linkItem, index) => {
-            const icon = getLinkIconSVG(linkItem.name)
-            return <Link href={linkItem.url} key={index} target="_blank" rel="noopener noreferrer"><div className="py-3 md:py-4 shadow-lg my-2 md:my-3 px-4 bg-slate-700 hover:bg-slate-600 rounded-lg text-white flex items-center gap-3 justify-center transition transform hover:scale-105 w-full text-sm md:text-base">
-              <div className="flex-shrink-0">{icon}</div>
-              <span>{linkItem.name}</span>
-            </div></Link>
-          })}
+          {item.links && item.links.length > 0 ? (
+            item.links.map((linkItem, index) => {
+              const icon = getLinkIconSVG(linkItem.name)
+              return <Link href={linkItem.url} key={index} target="_blank" rel="noopener noreferrer"><div className="py-3 md:py-4 shadow-lg my-2 md:my-3 px-4 bg-slate-700 hover:bg-slate-600 rounded-lg text-white flex items-center gap-3 justify-center transition transform hover:scale-105 w-full text-sm md:text-base">
+                <div className="flex-shrink-0">{icon}</div>
+                <span>{linkItem.name}</span>
+              </div></Link>
+            })
+          ) : (
+            <div className="py-4 text-center text-gray-300">
+              <p>No links added yet</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

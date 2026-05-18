@@ -20,6 +20,12 @@ const GenerateContent = () => {
    useEffect(() => {
      if (status === "unauthenticated") {
        router.push("/auth/signin?callbackUrl=/generate");
+       // Reset state on logout
+       setHandle(null);
+       setLinks([{ name: "", url: "" }]);
+       setLinkPicture("");
+       setIsEditing(false);
+       setHandleCheckCompleted(false);
      }
    }, [status, router]);
 
@@ -112,9 +118,22 @@ const GenerateContent = () => {
         const success = await addLinks(validLinks, handle, linkPicture);
         if (success) {
           toast.success("Your bitlink created successfully!");
-          setLinks([{ name: "", url: "" }]);
-          setLinkPicture("");
           setIsEditing(true);
+          
+          // Refetch the saved data from database
+          try {
+            const response = await fetch(`/api/edit?handle=${handle}`);
+            const result = await response.json();
+            if (result.success && result.result) {
+              setLinks(result.result.links || [{ name: "", url: "" }]);
+              setLinkPicture(result.result.picture || "");
+            }
+          } catch (error) {
+            console.error("Error refetching after creation:", error);
+            // Reset form to single empty link if refetch fails
+            setLinks([{ name: "", url: "" }]);
+            setLinkPicture("");
+          }
         }
       }
     } catch (error) {
