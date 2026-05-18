@@ -626,7 +626,7 @@ const Navbar = () => {
                   Sign In
                 </button>
               </div>
-            )}}
+            )}
           </ul>
         </div>
       )}
