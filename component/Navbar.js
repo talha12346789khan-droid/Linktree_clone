@@ -354,14 +354,15 @@ const Navbar = () => {
           <div ref={profileRef} className='relative'>
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-1 md:py-1.5 lg:py-2 px-2 md:px-3 lg:px-6 text-xs md:text-sm lg:text-base rounded-full hover:shadow-lg transition whitespace-nowrap'
+              className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-1 md:py-1.5 lg:py-2 px-2 md:px-2.5 lg:px-6 text-xs lg:text-base rounded-full hover:shadow-lg transition whitespace-nowrap'
             >
-              My Profile
+              <span className='hidden md:inline'>My Profile</span>
+              <span className='md:hidden'>Profile</span>
             </button>
 
             {/* Profile Dropdown */}
             {isProfileOpen && (
-              <div className='absolute right-0 top-12 w-64 bg-white shadow-2xl rounded-lg z-50 border border-gray-200 max-h-64 overflow-y-auto'>
+              <div className='absolute -right-4 md:right-0 top-12 w-56 md:w-64 bg-white shadow-2xl rounded-lg z-50 border border-gray-200 max-h-64 overflow-y-auto'>
                 <div className='p-4 border-b border-gray-200'>
                   <p className='text-gray-600 text-sm'>Logged in as:</p>
                   <p className='text-purple-600 font-bold text-sm mt-1 truncate'>{session?.user?.email}</p>
@@ -414,7 +415,7 @@ const Navbar = () => {
         ) : (
           <button 
             onClick={() => signIn()}
-            className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-1 md:py-1.5 lg:py-2 px-2 md:px-3 lg:px-6 text-xs md:text-sm lg:text-base rounded-full hover:shadow-lg transition whitespace-nowrap'
+            className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-1 md:py-1.5 lg:py-2 px-2 md:px-2.5 lg:px-6 text-xs lg:text-base rounded-full hover:shadow-lg transition whitespace-nowrap'
           >
             Sign In
           </button>
