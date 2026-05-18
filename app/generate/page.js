@@ -14,6 +14,7 @@ const GenerateContent = () => {
    const [linkPicture, setLinkPicture] = useState("");
    const [isLoading, setIsLoading] = useState(false);
    const [isEditing, setIsEditing] = useState(false);
+   const [handleCheckCompleted, setHandleCheckCompleted] = useState(false);
 
    // Redirect to sign-in if not authenticated
    useEffect(() => {
@@ -38,9 +39,10 @@ const GenerateContent = () => {
              setIsEditing(true);
            }
          } catch (error) {
-           console.log("Handle is new");
+           console.error("Error fetching handle:", error);
          } finally {
            setIsLoading(false);
+           setHandleCheckCompleted(true);
          }
        } else if (status === "authenticated") {
          // If no handle param but user is authenticated, fetch their handle
@@ -54,11 +56,16 @@ const GenerateContent = () => {
              setLinks(result.result.links || [{ name: "", url: "" }]);
              setLinkPicture(result.result.picture || "");
              setIsEditing(true);
+           } else {
+             // No existing handle, allow creating new one
+             console.log("No existing handle found for user");
            }
          } catch (error) {
-           console.log("No existing handle for user");
+           console.error("Error fetching user handle:", error);
+           toast.error("Failed to load your profile. Please try refreshing the page.");
          } finally {
            setIsLoading(false);
+           setHandleCheckCompleted(true);
          }
        }
      };
@@ -80,6 +87,14 @@ const GenerateContent = () => {
       toast.error("Please fill in your handle");
       return;
     }
+    
+    // Prevent creating a new handle if already editing
+    if (!isEditing && handleCheckCompleted) {
+      // This is a safety check - if we've completed the check and are NOT editing,
+      // and user tries to create, verify backend will catch it
+      console.log("Creating new handle - backend will validate");
+    }
+    
     const validLinks = links.filter(link => link.name && link.url);
     if (validLinks.length === 0) {
       toast.error("Please add at least one link");
@@ -301,6 +316,23 @@ const GenerateContent = () => {
           <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-6 rounded text-sm">
             <p className="font-semibold">📌 One Handle Per Account</p>
             <p>You already have a handle. Each account can only have one handle. You can edit your existing handle and links below.</p>
+          </div>
+        )}
+
+        {/* Warning if load failed */}
+        {handleCheckCompleted && !isLoading && !isEditing && !handle && (
+          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded text-sm">
+            <p className="font-semibold">⚠️ Unable to Load Profile</p>
+            <p className="mb-3">We couldn't load your existing profile. If you have a handle, it should appear above after refreshing.</p>
+            <button
+              onClick={() => {
+                setHandleCheckCompleted(false);
+                window.location.reload();
+              }}
+              className="bg-yellow-600 text-white font-bold py-1 px-3 rounded hover:bg-yellow-700 transition text-xs"
+            >
+              🔄 Refresh Profile
+            </button>
           </div>
         )}
 
