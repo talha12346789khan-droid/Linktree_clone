@@ -439,8 +439,46 @@ const Navbar = () => {
             <input
               type='text'
               placeholder='Search handlers...'
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+              autoFocus
             />
+            {isLoading && searchQuery && (
+              <div className='p-2 text-center text-gray-500 text-sm'>Loading...</div>
+            )}
+            {searchQuery && searchResults.length > 0 ? (
+              <ul className='max-h-64 overflow-y-auto mt-2'>
+                {searchResults
+                  .sort((a, b) => {
+                    if (userHandle) {
+                      if (a.handle.toLowerCase() === userHandle.toLowerCase()) return -1
+                      if (b.handle.toLowerCase() === userHandle.toLowerCase()) return 1
+                    }
+                    return 0
+                  })
+                  .map((result) => {
+                    const isUserHandle = userHandle && result.handle.toLowerCase() === userHandle.toLowerCase()
+                    return (
+                      <li
+                        key={result._id}
+                        onClick={() => {
+                          handleSearchSelect(result.handle)
+                          setIsMenuOpen(false)
+                        }}
+                        className={`px-3 py-2 cursor-pointer hover:bg-gray-100 transition border-b border-gray-100 text-sm ${
+                          isUserHandle ? 'bg-blue-50 font-semibold' : ''
+                        }`}
+                      >
+                        <span className='text-blue-600 font-medium'>@{result.handle}</span>
+                        {isUserHandle && <span className='text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded ml-2'>Your Profile</span>}
+                      </li>
+                    )
+                  })}
+              </ul>
+            ) : searchQuery && !isLoading ? (
+              <div className='p-2 text-center text-gray-500 text-sm mt-2'>No handlers found</div>
+            ) : null}
           </div>
           <ul className='flex flex-col p-4 gap-4 text-lg cursor-pointer'>
             {/* Product Dropdown Mobile */}
