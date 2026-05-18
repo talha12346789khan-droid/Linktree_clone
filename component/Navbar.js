@@ -119,23 +119,23 @@ const Navbar = () => {
   return (
     <>
       <ToastContainer />
-      <nav className='fixed bg-white rounded-full md:rounded-full p-2 md:py-4 w-full md:w-[80vw] top-10 md:right-[10vw] md:left-auto left-0 flex justify-between items-center z-50'>
+      <nav className='fixed bg-white rounded-full md:rounded-full p-1.5 md:py-4 mx-2 md:mx-0 w-[calc(100%-1rem)] md:w-[80vw] top-10 md:right-[10vw] md:left-auto left-0 flex justify-between items-center z-50'>
       {/* Logo */}
-      <div className='logo flex items-center mx-2 md:mx-8 shrink-0'>
+      <div className='logo flex items-center mx-1 md:mx-8 shrink-0'>
         <Link href="/">
           <Image 
             alt='logo' 
             src="https://cdn.prod.website-files.com/666255f7f2126f4e8cec6f8f/66634daccb34e6d65a41c76d_download.svg" 
             width={100}
             height={100}
-            className='md:w-24 md:h-24 w-20 h-20'
+            className='md:w-24 md:h-24 w-16 h-16'
           />
         </Link>
       </div>
 
       {/* Menu Items - Hidden on mobile, visible on md and up */}
       <div className='hidden md:flex items-center ml-10 flex-1'>
-        <ul className='flex gap-8 text-lg cursor-pointer'>
+        <ul className='flex gap-3 lg:gap-8 text-base lg:text-lg cursor-pointer'>
           <li 
             ref={productRef}
             onMouseEnter={() => setIsProductDropdown(true)}
@@ -143,10 +143,10 @@ const Navbar = () => {
             className='relative group'
           >
             <button
-              className='text-lg md:text-xl hover:font-bold transition flex items-center gap-2'
+              className='text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
             >
               Product
-              <svg className={`w-4 h-4 transition-transform ${isProductDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <svg className={`w-3 h-3 lg:w-4 lg:h-4 transition-transform ${isProductDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
               </svg>
             </button>
@@ -173,10 +173,10 @@ const Navbar = () => {
             className='relative group'
           >
             <button
-              className='text-lg md:text-xl hover:font-bold transition flex items-center gap-2'
+              className='text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
             >
               Templates
-              <svg className={`w-4 h-4 transition-transform ${isTemplatesDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <svg className={`w-3 h-3 lg:w-4 lg:h-4 transition-transform ${isTemplatesDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
               </svg>
             </button>
@@ -203,10 +203,10 @@ const Navbar = () => {
             className='relative group'
           >
             <button
-              className='text-lg md:text-xl hover:font-bold transition flex items-center gap-2'
+              className='text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
             >
               Marketplace
-              <svg className={`w-4 h-4 transition-transform ${isMarketplaceDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <svg className={`w-3 h-3 lg:w-4 lg:h-4 transition-transform ${isMarketplaceDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
               </svg>
             </button>
@@ -233,10 +233,10 @@ const Navbar = () => {
             className='relative group'
           >
             <button
-              className='text-lg md:text-xl hover:font-bold transition flex items-center gap-2'
+              className='text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
             >
               Learn
-              <svg className={`w-4 h-4 transition-transform ${isLearnDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <svg className={`w-3 h-3 lg:w-4 lg:h-4 transition-transform ${isLearnDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
               </svg>
             </button>
@@ -263,10 +263,10 @@ const Navbar = () => {
             className='relative group'
           >
             <button
-              className='text-lg md:text-xl hover:font-bold transition flex items-center gap-2'
+              className='text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
             >
               Pricing
-              <svg className={`w-4 h-4 transition-transform ${isPricingDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <svg className={`w-3 h-3 lg:w-4 lg:h-4 transition-transform ${isPricingDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
               </svg>
             </button>
@@ -289,16 +289,16 @@ const Navbar = () => {
       </div>
 
       {/* Desktop Buttons - Hidden on mobile */}
-      <div className='hidden md:flex buttons mr-5 gap-3 items-center'>
+      <div className='hidden md:flex buttons mr-2 lg:mr-5 gap-2 lg:gap-3 items-center'>
         {/* Search Bar */}
         <div ref={searchRef} className='relative'>
           <button
             onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className='cursor-pointer hover:bg-gray-200 p-2 rounded-lg transition'
+            className='cursor-pointer hover:bg-gray-200 p-1.5 lg:p-2 rounded-lg transition'
             aria-label='Search'
             title='Search handlers'
           >
-            <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <svg className='w-4 h-4 lg:w-5 lg:h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
               <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
             </svg>
           </button>
@@ -354,7 +354,7 @@ const Navbar = () => {
           <div ref={profileRef} className='relative'>
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-2 px-6 rounded-full hover:shadow-lg transition'
+              className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-1.5 lg:py-2 px-3 lg:px-6 text-sm lg:text-base rounded-full hover:shadow-lg transition'
             >
               My Profile
             </button>
@@ -414,7 +414,7 @@ const Navbar = () => {
         ) : (
           <button 
             onClick={() => signIn()}
-            className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-2 px-6 rounded-full hover:shadow-lg transition'
+            className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-1.5 lg:py-2 px-3 lg:px-6 text-sm lg:text-base rounded-full hover:shadow-lg transition'
           >
             Sign In
           </button>
@@ -423,32 +423,32 @@ const Navbar = () => {
 
       {/* Mobile Menu Button */}
       <button
-        className='md:hidden mr-4 flex flex-col gap-1.5 cursor-pointer'
+        className='md:hidden mr-2 flex flex-col gap-1 cursor-pointer'
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         aria-label='Toggle menu'
       >
-        <span className={`block w-6 h-0.5 bg-black transition ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-        <span className={`block w-6 h-0.5 bg-black transition ${isMenuOpen ? 'opacity-0' : ''}`}></span>
-        <span className={`block w-6 h-0.5 bg-black transition ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+        <span className={`block w-5 h-0.5 bg-black transition ${isMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
+        <span className={`block w-5 h-0.5 bg-black transition ${isMenuOpen ? 'opacity-0' : ''}`}></span>
+        <span className={`block w-5 h-0.5 bg-black transition ${isMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></span>
       </button>
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className='absolute top-full left-0 right-0 bg-white shadow-lg rounded-2xl mt-2 md:hidden max-h-[calc(100vh-120px)] overflow-y-auto'>
-          <div className='p-4 border-b border-gray-200 sticky top-0 bg-white'>
+        <div className='absolute top-full left-2 right-2 bg-white shadow-lg rounded-2xl mt-1.5 md:hidden max-h-[calc(100vh-120px)] overflow-y-auto'>
+          <div className='p-3 border-b border-gray-200 sticky top-0 bg-white'>
             <input
               type='text'
               placeholder='Search handlers...'
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+              className='w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
               autoFocus
             />
             {isLoading && searchQuery && (
-              <div className='p-2 text-center text-gray-500 text-sm'>Loading...</div>
+              <div className='p-2 text-center text-gray-500 text-xs'>Loading...</div>
             )}
             {searchQuery && searchResults.length > 0 ? (
-              <ul className='max-h-64 overflow-y-auto mt-2'>
+              <ul className='max-h-48 overflow-y-auto mt-1.5'>
                 {searchResults
                   .sort((a, b) => {
                     if (userHandle) {
@@ -466,144 +466,144 @@ const Navbar = () => {
                           handleSearchSelect(result.handle)
                           setIsMenuOpen(false)
                         }}
-                        className={`px-3 py-2 cursor-pointer hover:bg-gray-100 transition border-b border-gray-100 text-sm ${
+                        className={`px-2 py-1.5 cursor-pointer hover:bg-gray-100 transition border-b border-gray-100 text-xs ${
                           isUserHandle ? 'bg-blue-50 font-semibold' : ''
                         }`}
                       >
                         <span className='text-blue-600 font-medium'>@{result.handle}</span>
-                        {isUserHandle && <span className='text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded ml-2'>Your Profile</span>}
+                        {isUserHandle && <span className='text-xs bg-blue-200 text-blue-800 px-2 py-0.5 rounded ml-1'>Your Profile</span>}
                       </li>
                     )
                   })}
               </ul>
             ) : searchQuery && !isLoading ? (
-              <div className='p-2 text-center text-gray-500 text-sm mt-2'>No handlers found</div>
+              <div className='p-1.5 text-center text-gray-500 text-xs mt-1.5'>No handlers found</div>
             ) : null}
           </div>
-          <ul className='flex flex-col p-4 gap-4 text-lg cursor-pointer'>
+          <ul className='flex flex-col p-2 gap-2 text-sm cursor-pointer'>
             {/* Product Dropdown Mobile */}
-            <li className='text-lg px-4 py-2 hover:bg-gray-100 rounded'>
+            <li className='text-sm px-2 py-1 hover:bg-gray-100 rounded'>
               <button 
                 onClick={() => setIsMobileProductDropdown(!isMobileProductDropdown)}
-                className='w-full text-left flex justify-between items-center hover:font-bold transition'
+                className='w-full text-left flex justify-between items-center hover:font-bold transition text-xs'
               >
                 <span>Product</span>
-                <svg className={`w-4 h-4 transition-transform ${isMobileProductDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <svg className={`w-3 h-3 transition-transform ${isMobileProductDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
                 </svg>
               </button>
               {isMobileProductDropdown && (
-                <div className='mt-2 bg-gray-50 rounded-lg overflow-hidden'>
-                  <ul className='py-2'>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileProductDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>📱 Mobile App</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileProductDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🌐 Web Platform</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileProductDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🔧 Tools & Extensions</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileProductDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base border-t'>📚 Documentation</li>
+                <div className='mt-1 bg-gray-50 rounded-lg overflow-hidden'>
+                  <ul className='py-1'>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileProductDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>📱 Mobile App</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileProductDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🌐 Web Platform</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileProductDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🔧 Tools & Extensions</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileProductDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs border-t'>📚 Documentation</li>
                   </ul>
                 </div>
               )}
             </li>
 
             {/* Templates Dropdown Mobile */}
-            <li className='text-lg px-4 py-2 hover:bg-gray-100 rounded'>
+            <li className='text-sm px-2 py-1 hover:bg-gray-100 rounded'>
               <button 
                 onClick={() => setIsMobileTemplatesDropdown(!isMobileTemplatesDropdown)}
-                className='w-full text-left flex justify-between items-center hover:font-bold transition'
+                className='w-full text-left flex justify-between items-center hover:font-bold transition text-xs'
               >
                 <span>Templates</span>
-                <svg className={`w-4 h-4 transition-transform ${isMobileTemplatesDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <svg className={`w-3 h-3 transition-transform ${isMobileTemplatesDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
                 </svg>
               </button>
               {isMobileTemplatesDropdown && (
-                <div className='mt-2 bg-gray-50 rounded-lg overflow-hidden'>
-                  <ul className='py-2'>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileTemplatesDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🎨 Creative</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileTemplatesDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>💼 Business</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileTemplatesDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🎵 Music & Audio</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileTemplatesDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base border-t'>🎬 Video & Media</li>
+                <div className='mt-1 bg-gray-50 rounded-lg overflow-hidden'>
+                  <ul className='py-1'>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileTemplatesDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🎨 Creative</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileTemplatesDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>💼 Business</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileTemplatesDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🎵 Music & Audio</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileTemplatesDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs border-t'>🎬 Video & Media</li>
                   </ul>
                 </div>
               )}
             </li>
 
             {/* Marketplace Dropdown Mobile */}
-            <li className='text-lg px-4 py-2 hover:bg-gray-100 rounded'>
+            <li className='text-sm px-2 py-1 hover:bg-gray-100 rounded'>
               <button 
                 onClick={() => setIsMobileMarketplaceDropdown(!isMobileMarketplaceDropdown)}
-                className='w-full text-left flex justify-between items-center hover:font-bold transition'
+                className='w-full text-left flex justify-between items-center hover:font-bold transition text-xs'
               >
                 <span>Marketplace</span>
-                <svg className={`w-4 h-4 transition-transform ${isMobileMarketplaceDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <svg className={`w-3 h-3 transition-transform ${isMobileMarketplaceDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
                 </svg>
               </button>
               {isMobileMarketplaceDropdown && (
-                <div className='mt-2 bg-gray-50 rounded-lg overflow-hidden'>
-                  <ul className='py-2'>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileMarketplaceDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🎯 Featured</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileMarketplaceDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>⭐ Top Rated</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileMarketplaceDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🆕 New Releases</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileMarketplaceDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base border-t'>💎 Premium</li>
+                <div className='mt-1 bg-gray-50 rounded-lg overflow-hidden'>
+                  <ul className='py-1'>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileMarketplaceDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🎯 Featured</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileMarketplaceDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>⭐ Top Rated</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileMarketplaceDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🆕 New Releases</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileMarketplaceDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs border-t'>💎 Premium</li>
                   </ul>
                 </div>
               )}
             </li>
 
             {/* Learn Dropdown Mobile */}
-            <li className='text-lg px-4 py-2 hover:bg-gray-100 rounded'>
+            <li className='text-sm px-2 py-1 hover:bg-gray-100 rounded'>
               <button 
                 onClick={() => setIsMobileLearnDropdown(!isMobileLearnDropdown)}
-                className='w-full text-left flex justify-between items-center hover:font-bold transition'
+                className='w-full text-left flex justify-between items-center hover:font-bold transition text-xs'
               >
                 <span>Learn</span>
-                <svg className={`w-4 h-4 transition-transform ${isMobileLearnDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <svg className={`w-3 h-3 transition-transform ${isMobileLearnDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
                 </svg>
               </button>
               {isMobileLearnDropdown && (
-                <div className='mt-2 bg-gray-50 rounded-lg overflow-hidden'>
-                  <ul className='py-2'>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileLearnDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>📖 Tutorials</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileLearnDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🎓 Courses</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileLearnDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>❓ FAQ</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileLearnDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base border-t'>🆘 Support</li>
+                <div className='mt-1 bg-gray-50 rounded-lg overflow-hidden'>
+                  <ul className='py-1'>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileLearnDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>📖 Tutorials</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileLearnDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🎓 Courses</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileLearnDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>❓ FAQ</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobileLearnDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs border-t'>🆘 Support</li>
                   </ul>
                 </div>
               )}
             </li>
 
             {/* Pricing Dropdown Mobile */}
-            <li className='text-lg px-4 py-2 hover:bg-gray-100 rounded'>
+            <li className='text-sm px-2 py-1 hover:bg-gray-100 rounded'>
               <button 
                 onClick={() => setIsMobilePricingDropdown(!isMobilePricingDropdown)}
-                className='w-full text-left flex justify-between items-center hover:font-bold transition'
+                className='w-full text-left flex justify-between items-center hover:font-bold transition text-xs'
               >
                 <span>Pricing</span>
-                <svg className={`w-4 h-4 transition-transform ${isMobilePricingDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <svg className={`w-3 h-3 transition-transform ${isMobilePricingDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
                 </svg>
               </button>
               {isMobilePricingDropdown && (
-                <div className='mt-2 bg-gray-50 rounded-lg overflow-hidden'>
-                  <ul className='py-2'>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobilePricingDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🆓 Free Plan</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobilePricingDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>⭐ Starter</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobilePricingDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base'>🚀 Pro</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobilePricingDropdown(false) }} className='px-4 py-2 hover:bg-gray-200 transition text-base border-t'>👑 Enterprise</li>
+                <div className='mt-1 bg-gray-50 rounded-lg overflow-hidden'>
+                  <ul className='py-1'>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobilePricingDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🆓 Free Plan</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobilePricingDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>⭐ Starter</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobilePricingDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🚀 Pro</li>
+                    <li onClick={() => { window.open('#', '_blank'); setIsMobilePricingDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs border-t'>👑 Enterprise</li>
                   </ul>
                 </div>
               )}
             </li>
-            <hr className='my-2' />
+            <hr className='my-1' />
             {status === 'authenticated' ? (
-              <div className='px-4 py-3'>
-                <div className='bg-purple-50 border border-purple-200 rounded-lg p-3 mb-3'>
+              <div className='px-2 py-1.5'>
+                <div className='bg-purple-50 border border-purple-200 rounded-lg p-2 mb-2'>
                   <p className='text-gray-600 text-xs'>Logged in as:</p>
-                  <p className='text-purple-600 font-bold text-sm mt-1 truncate'>{session?.user?.email}</p>
+                  <p className='text-purple-600 font-bold text-xs mt-1 truncate'>{session?.user?.email}</p>
                 </div>
-                <Link href="/generate" className='block mb-2'>
-                  <button className='cursor-pointer bg-slate-300 px-5 py-2 rounded-lg w-full hover:bg-slate-400 transition'>
+                <Link href="/generate" className='block mb-1'>
+                  <button className='cursor-pointer bg-slate-300 px-3 py-1 rounded text-xs w-full hover:bg-slate-400 transition'>
                     ✏️ My Links
                   </button>
                 </Link>
@@ -612,21 +612,21 @@ const Navbar = () => {
                     signOut({ callbackUrl: "/" })
                     setIsMenuOpen(false)
                   }}
-                  className='cursor-pointer bg-red-600 text-white px-5 py-2 rounded-lg w-full hover:bg-red-700 transition font-semibold'
+                  className='cursor-pointer bg-red-600 text-white px-3 py-1 rounded text-xs w-full hover:bg-red-700 transition font-semibold'
                 >
                   🚪 Logout
                 </button>
               </div>
             ) : (
-              <div className='px-4 py-3'>
+              <div className='px-2 py-1.5'>
                 <button 
                   onClick={() => signIn()}
-                  className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-2 px-6 rounded-full w-full hover:shadow-lg transition'
+                  className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-1 px-3 rounded-full text-xs w-full hover:shadow-lg transition'
                 >
                   Sign In
                 </button>
               </div>
-            )}
+            )}}
           </ul>
         </div>
       )}
