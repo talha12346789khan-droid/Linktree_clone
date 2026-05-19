@@ -9,6 +9,161 @@ import { toast, ToastContainer } from 'react-toastify'
 import { navMenus } from '@/lib/navMenus'
 import { DesktopNavDropdown, MobileNavDropdown } from '@/component/NavDropdown'
 
+function SearchIcon({ className = 'w-5 h-5' }) {
+  return (
+    <svg className={className} fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden>
+      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
+    </svg>
+  )
+}
+
+function SearchSpinner() {
+  return (
+    <svg className='h-4 w-4 animate-spin text-purple-600' viewBox='0 0 24 24' fill='none' aria-hidden>
+      <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
+      <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z' />
+    </svg>
+  )
+}
+
+function SearchResultsList({ searchQuery, searchResults, isLoading, userHandle, onSelect, compact }) {
+  if (!searchQuery.trim()) {
+    return (
+      <p className={`text-center text-gray-400 ${compact ? 'py-4 text-xs' : 'py-6 text-sm'}`}>
+        Type a handle to find profiles
+      </p>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className={`flex items-center justify-center gap-2 text-gray-500 ${compact ? 'py-4 text-xs' : 'py-8 text-sm'}`}>
+        <SearchSpinner />
+        <span>Searching...</span>
+      </div>
+    )
+  }
+
+  if (searchResults.length === 0) {
+    return (
+      <div className={`text-center ${compact ? 'py-4 px-2' : 'py-8 px-4'}`}>
+        <div className={`mx-auto mb-2 flex items-center justify-center rounded-full bg-gray-100 text-gray-400 ${compact ? 'h-10 w-10' : 'h-12 w-12'}`}>
+          <SearchIcon className={compact ? 'h-5 w-5' : 'h-6 w-6'} />
+        </div>
+        <p className={`font-medium text-gray-700 ${compact ? 'text-xs' : 'text-sm'}`}>No profiles found</p>
+        <p className={`mt-0.5 text-gray-400 ${compact ? 'text-[10px]' : 'text-xs'}`}>
+          Try another handle or spelling
+        </p>
+      </div>
+    )
+  }
+
+  const sorted = [...searchResults].sort((a, b) => {
+    if (userHandle) {
+      if (a.handle.toLowerCase() === userHandle.toLowerCase()) return -1
+      if (b.handle.toLowerCase() === userHandle.toLowerCase()) return 1
+    }
+    return 0
+  })
+
+  return (
+    <ul className={`overflow-y-auto ${compact ? 'max-h-44' : 'max-h-72'}`}>
+      {sorted.map((result) => {
+        const isUserHandle =
+          userHandle && result.handle.toLowerCase() === userHandle.toLowerCase()
+        const initial = (result.handle?.[0] || '?').toUpperCase()
+        return (
+          <li key={result._id}>
+            <button
+              type='button'
+              onClick={() => onSelect(result.handle)}
+              className={`group flex w-full items-center gap-3 text-left transition ${
+                compact ? 'px-3 py-2.5' : 'px-4 py-3'
+              } ${
+                isUserHandle
+                  ? 'bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100'
+                  : 'hover:bg-gray-50'
+              }`}
+            >
+              <span
+                className={`flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 font-bold text-white shadow-sm ${
+                  compact ? 'h-8 w-8 text-xs' : 'h-10 w-10 text-sm'
+                }`}
+              >
+                {initial}
+              </span>
+              <span className='min-w-0 flex-1'>
+                <span
+                  className={`block truncate font-semibold text-gray-900 group-hover:text-purple-700 ${
+                    compact ? 'text-sm' : 'text-base'
+                  }`}
+                >
+                  @{result.handle}
+                </span>
+                {isUserHandle && (
+                  <span className='mt-0.5 inline-block rounded-full bg-purple-200/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-purple-800'>
+                    Your profile
+                  </span>
+                )}
+              </span>
+              <svg
+                className={`shrink-0 text-gray-300 transition group-hover:translate-x-0.5 group-hover:text-purple-500 ${
+                  compact ? 'h-4 w-4' : 'h-5 w-5'
+                }`}
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+                aria-hidden
+              >
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
+              </svg>
+            </button>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
+function SearchInput({ value, onChange, onClear, compact, inputRef }) {
+  return (
+    <div className={`relative flex items-center ${compact ? '' : ''}`}>
+      <span className={`pointer-events-none absolute text-gray-400 ${compact ? 'left-3' : 'left-4'}`}>
+        <SearchIcon className={compact ? 'h-4 w-4' : 'h-5 w-5'} />
+      </span>
+      <input
+        ref={inputRef}
+        type='search'
+        placeholder='Search @handles...'
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={`w-full border-0 bg-gray-50 font-medium text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/40 ${
+          compact
+            ? 'rounded-xl py-2.5 pl-9 pr-9 text-sm'
+            : 'rounded-xl py-3 pl-11 pr-10 text-sm'
+        }`}
+        autoComplete='off'
+        autoCorrect='off'
+        spellCheck='false'
+      />
+      {value && (
+        <button
+          type='button'
+          onClick={onClear}
+          className={`absolute rounded-full p-1 text-gray-400 transition hover:bg-gray-200 hover:text-gray-600 ${
+            compact ? 'right-2' : 'right-3'
+          }`}
+          aria-label='Clear search'
+        >
+          <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+          </svg>
+        </button>
+      )}
+    </div>
+  )
+}
+
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -19,6 +174,7 @@ const Navbar = () => {
   const [userHandle, setUserHandle] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const searchRef = useRef(null)
+  const searchInputRef = useRef(null)
   const profileRef = useRef(null)
   const router = useRouter()
   const { data: session, status } = useSession()
@@ -94,9 +250,28 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsSearchOpen(false)
+      }
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [])
+
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      searchInputRef.current.focus()
+    }
+  }, [isSearchOpen])
+
+  const clearSearch = () => setSearchQuery('')
+
   const handleSearchSelect = (handle) => {
     router.push(`/${encodeURIComponent(handle)}`)
     setIsSearchOpen(false)
+    setIsMenuOpen(false)
     setSearchQuery('')
   }
 
@@ -128,62 +303,52 @@ const Navbar = () => {
 
       {/* Desktop Buttons - Hidden on mobile */}
       <div className='hidden md:flex buttons mr-1 md:mr-2 lg:mr-5 gap-1 md:gap-2 lg:gap-3 items-center'>
-        {/* Search Bar */}
+        {/* Search */}
         <div ref={searchRef} className='relative'>
           <button
-            onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className='cursor-pointer hover:bg-gray-200 p-1 md:p-1.5 lg:p-2 rounded-lg transition'
-            aria-label='Search'
-            title='Search handlers'
+            type='button'
+            onClick={() => setIsSearchOpen((open) => !open)}
+            className={`flex items-center justify-center rounded-full p-2 transition ${
+              isSearchOpen
+                ? 'bg-purple-100 text-purple-700'
+                : 'text-gray-600 hover:bg-gray-100 hover:text-purple-700'
+            }`}
+            aria-label='Search profiles'
+            aria-expanded={isSearchOpen}
           >
-            <svg className='w-3.5 h-3.5 md:w-4 md:h-4 lg:w-5 lg:h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
-            </svg>
+            <SearchIcon className='h-5 w-5' />
           </button>
 
           {isSearchOpen && (
-            <div className='absolute right-0 top-12 w-64 bg-white shadow-lg rounded-lg z-50 border border-gray-200'>
-              <input
-                type='text'
-                placeholder='Search handlers...'
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className='w-full px-4 py-2 border-b border-gray-200 rounded-t-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
-                autoFocus
-              />
-              {isLoading && (
-                <div className='p-4 text-center text-gray-500'>Loading...</div>
-              )}
-              {searchQuery && searchResults.length > 0 ? (
-                <ul className='max-h-64 overflow-y-auto'>
-                  {searchResults
-                    .sort((a, b) => {
-                      // Prioritize exact match or user's own handle
-                      if (userHandle) {
-                        if (a.handle.toLowerCase() === userHandle.toLowerCase()) return -1
-                        if (b.handle.toLowerCase() === userHandle.toLowerCase()) return 1
-                      }
-                      return 0
-                    })
-                    .map((result) => {
-                      const isUserHandle = userHandle && result.handle.toLowerCase() === userHandle.toLowerCase()
-                      return (
-                        <li
-                          key={result._id}
-                          onClick={() => handleSearchSelect(result.handle)}
-                          className={`px-4 py-3 cursor-pointer hover:bg-gray-100 transition border-b border-gray-100 flex items-center gap-2 ${
-                            isUserHandle ? 'bg-blue-50 font-semibold' : ''
-                          }`}
-                        >
-                          <span className='text-blue-600 font-medium'>@{result.handle}</span>
-                          {isUserHandle && <span className='text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded'>Your Profile</span>}
-                        </li>
-                      )
-                    })}
-                </ul>
-              ) : searchQuery && !isLoading ? (
-                <div className='p-4 text-center text-gray-500 text-sm'>No handlers found</div>
-              ) : null}
+            <div
+              className='absolute right-0 top-full z-50 mt-3 w-[min(100vw-2rem,22rem)] rounded-2xl border border-gray-100 bg-white shadow-2xl shadow-purple-500/10 ring-1 ring-black/5'
+              role='dialog'
+              aria-label='Search profiles'
+            >
+              <div className='rounded-t-2xl border-b border-gray-100 bg-gradient-to-r from-purple-50/80 to-pink-50/80 px-4 py-3'>
+                <p className='text-xs font-semibold uppercase tracking-wider text-purple-700'>Find a profile</p>
+                <p className='mt-0.5 text-[11px] text-gray-500'>Search by @handle</p>
+              </div>
+              <div className='p-3'>
+                <SearchInput
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  onClear={clearSearch}
+                  inputRef={searchInputRef}
+                />
+              </div>
+              <div className='border-t border-gray-100'>
+                <SearchResultsList
+                  searchQuery={searchQuery}
+                  searchResults={searchResults}
+                  isLoading={isLoading}
+                  userHandle={userHandle}
+                  onSelect={handleSearchSelect}
+                />
+              </div>
+              <p className='rounded-b-2xl border-t border-gray-50 px-3 py-2 text-center text-[10px] text-gray-400'>
+                Esc to close
+              </p>
             </div>
           )}
         </div>
@@ -300,50 +465,26 @@ const Navbar = () => {
       {/* Mobile Menu */}
       {isMenuOpen && (
         <div className='absolute top-full left-2 right-2 bg-white shadow-lg rounded-2xl mt-1.5 md:hidden max-h-[calc(100vh-120px)] overflow-y-auto'>
-          <div className='p-3 border-b border-gray-200 sticky top-0 bg-white'>
-            <input
-              type='text'
-              placeholder='Search handlers...'
+          <div className='sticky top-0 z-10 border-b border-gray-100 bg-gradient-to-r from-purple-50/80 to-pink-50/80 p-3'>
+            <p className='mb-2 text-xs font-semibold uppercase tracking-wider text-purple-700'>
+              Find a profile
+            </p>
+            <SearchInput
+              compact
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className='w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
-              autoFocus
+              onChange={setSearchQuery}
+              onClear={clearSearch}
             />
-            {isLoading && searchQuery && (
-              <div className='p-2 text-center text-gray-500 text-xs'>Loading...</div>
-            )}
-            {searchQuery && searchResults.length > 0 ? (
-              <ul className='max-h-48 overflow-y-auto mt-1.5'>
-                {searchResults
-                  .sort((a, b) => {
-                    if (userHandle) {
-                      if (a.handle.toLowerCase() === userHandle.toLowerCase()) return -1
-                      if (b.handle.toLowerCase() === userHandle.toLowerCase()) return 1
-                    }
-                    return 0
-                  })
-                  .map((result) => {
-                    const isUserHandle = userHandle && result.handle.toLowerCase() === userHandle.toLowerCase()
-                    return (
-                      <li
-                        key={result._id}
-                        onClick={() => {
-                          handleSearchSelect(result.handle)
-                          setIsMenuOpen(false)
-                        }}
-                        className={`px-2 py-1.5 cursor-pointer hover:bg-gray-100 transition border-b border-gray-100 text-xs ${
-                          isUserHandle ? 'bg-blue-50 font-semibold' : ''
-                        }`}
-                      >
-                        <span className='text-blue-600 font-medium'>@{result.handle}</span>
-                        {isUserHandle && <span className='text-xs bg-blue-200 text-blue-800 px-2 py-0.5 rounded ml-1'>Your Profile</span>}
-                      </li>
-                    )
-                  })}
-              </ul>
-            ) : searchQuery && !isLoading ? (
-              <div className='p-1.5 text-center text-gray-500 text-xs mt-1.5'>No handlers found</div>
-            ) : null}
+            <div className='mt-2 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm'>
+              <SearchResultsList
+                compact
+                searchQuery={searchQuery}
+                searchResults={searchResults}
+                isLoading={isLoading}
+                userHandle={userHandle}
+                onSelect={handleSearchSelect}
+              />
+            </div>
           </div>
           <ul className='flex flex-col p-2 gap-2 text-sm cursor-pointer'>
             {navMenus.map((menu) => (
