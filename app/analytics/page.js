@@ -1,15 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import AnalyticsCharts from "@/component/AnalyticsCharts";
 
 export default function AnalyticsPage() {
   const { status } = useSession();
   const router = useRouter();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [range, setRange] = useState(7);
+
+  const loadAnalytics = useCallback(async (days) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/analytics?range=${days}`);
+      const json = await res.json();
+      if (json.success) setData(json.result);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -17,17 +30,8 @@ export default function AnalyticsPage() {
       return;
     }
     if (status !== "authenticated") return;
-
-    (async () => {
-      try {
-        const res = await fetch("/api/analytics");
-        const json = await res.json();
-        if (json.success) setData(json.result);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [status, router]);
+    loadAnalytics(range);
+  }, [status, router, range, loadAnalytics]);
 
   if (status === "loading" || status === "unauthenticated") {
     return (
@@ -37,15 +41,7 @@ export default function AnalyticsPage() {
     );
   }
 
-  if (loading) {
-    return (
-      <main className="flex flex-1 items-center justify-center bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600">
-        <p className="text-lg text-white">Loading stats...</p>
-      </main>
-    );
-  }
-
-  if (!data) {
+  if (!data && !loading) {
     return (
       <main className="flex flex-1 flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600 p-6 text-center">
         <h1 className="text-2xl font-bold text-white">No profile yet</h1>
@@ -65,87 +61,123 @@ export default function AnalyticsPage() {
   return (
     <main className="flex flex-1 flex-col bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600 p-4 md:p-6">
       <div className="mx-auto w-full max-w-3xl mt-50 md:mt-50">
-        <div className="mb-8 text-center md:text-left">
-          <h1 className="text-2xl font-bold text-white md:text-4xl">
-            Your analytics
-          </h1>
-          <p className="mt-2 text-purple-100">
-            How many people opened your page and clicked each link.
-          </p>
-          <p className="mt-1 text-sm text-purple-200">
-            Profile:{" "}
-            <Link
-              href={`/${encodeURIComponent(data.handle)}`}
-              className="font-semibold text-white underline"
-            >
-              /{data.handle}
-            </Link>
-          </p>
-        </div>
-
-        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="rounded-lg bg-white p-6 text-center shadow-2xl">
-            <p className="text-3xl font-bold text-purple-600">
-              {data.profileViews.toLocaleString()}
+        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="text-center md:text-left">
+            <h1 className="text-2xl font-bold text-white md:text-4xl">
+              Your analytics
+            </h1>
+            <p className="mt-2 text-purple-100">
+              Track profile visits and link clicks over time.
             </p>
-            <p className="mt-1 text-sm font-semibold text-gray-600">
-              Profile visits
-            </p>
-            <p className="mt-2 text-xs text-gray-400">
-              Opens of your public page
-            </p>
-          </div>
-          <div className="rounded-lg bg-white p-6 text-center shadow-2xl">
-            <p className="text-3xl font-bold text-pink-600">
-              {data.totalClicks.toLocaleString()}
-            </p>
-            <p className="mt-1 text-sm font-semibold text-gray-600">
-              Total link clicks
-            </p>
-            <p className="mt-2 text-xs text-gray-400">
-              All tracked button taps
-            </p>
-          </div>
-          <div className="rounded-lg bg-white p-6 text-center shadow-2xl">
-            <p className="text-3xl font-bold text-gray-800">
-              {data.links.length}
-            </p>
-            <p className="mt-1 text-sm font-semibold text-gray-600">
-              Active links
-            </p>
-            <p className="mt-2 text-xs text-gray-400">
-              On your profile now
-            </p>
-          </div>
-        </div>
-
-        <div className="rounded-lg bg-white p-6 shadow-2xl">
-          <h2 className="mb-4 text-xl font-bold text-gray-800">
-            Clicks per link
-          </h2>
-          {data.links.length === 0 ? (
-            <p className="text-gray-500">No links on your profile yet.</p>
-          ) : (
-            <ul className="divide-y divide-gray-100">
-              {data.links.map((link, i) => (
-                <li
-                  key={i}
-                  className="flex flex-wrap items-center justify-between gap-3 py-4 first:pt-0"
+            {data?.handle && (
+              <p className="mt-1 text-sm text-purple-200">
+                Profile:{" "}
+                <Link
+                  href={`/${encodeURIComponent(data.handle)}`}
+                  className="font-semibold text-white underline"
                 >
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-gray-800">{link.name}</p>
-                    <p className="truncate text-xs text-gray-500">{link.url}</p>
-                  </div>
-                  <div className="shrink-0 text-right">
-                    <span className="inline-block rounded-full bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-1.5 text-sm font-bold text-white">
-                      {link.clicks.toLocaleString()} clicks
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+                  /{data.handle}
+                </Link>
+              </p>
+            )}
+          </div>
+          <div className="flex justify-center gap-2">
+            {[7, 30].map((days) => (
+              <button
+                key={days}
+                type="button"
+                onClick={() => setRange(days)}
+                className={`rounded-full px-4 py-2 text-sm font-bold transition ${
+                  range === days
+                    ? "bg-white text-purple-700 shadow-lg"
+                    : "bg-white/20 text-white hover:bg-white/30"
+                }`}
+              >
+                {days} days
+              </button>
+            ))}
+          </div>
         </div>
+
+        {loading || !data ? (
+          <p className="text-center text-white">Loading stats...</p>
+        ) : (
+          <>
+            <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-lg bg-white p-5 text-center shadow-2xl">
+                <p className="text-2xl font-bold text-purple-600">
+                  {data.profileViews.toLocaleString()}
+                </p>
+                <p className="mt-1 text-sm font-semibold text-gray-600">
+                  Profile visits
+                </p>
+                <p className="mt-1 text-xs text-gray-400">All time</p>
+              </div>
+              <div className="rounded-lg bg-white p-5 text-center shadow-2xl">
+                <p className="text-2xl font-bold text-pink-600">
+                  {data.totalClicks.toLocaleString()}
+                </p>
+                <p className="mt-1 text-sm font-semibold text-gray-600">
+                  Link clicks
+                </p>
+                <p className="mt-1 text-xs text-gray-400">All time</p>
+              </div>
+              <div className="rounded-lg bg-white p-5 text-center shadow-2xl">
+                <p className="text-2xl font-bold text-indigo-600">
+                  {data.summary?.viewsInRange?.toLocaleString() ?? 0}
+                </p>
+                <p className="mt-1 text-sm font-semibold text-gray-600">
+                  Views ({range}d)
+                </p>
+              </div>
+              <div className="rounded-lg bg-white p-5 text-center shadow-2xl">
+                <p className="text-2xl font-bold text-violet-600">
+                  {data.summary?.clicksInRange?.toLocaleString() ?? 0}
+                </p>
+                <p className="mt-1 text-sm font-semibold text-gray-600">
+                  Clicks ({range}d)
+                </p>
+                {data.summary?.viewsInRange > 0 && (
+                  <p className="mt-1 text-xs text-gray-400">
+                    CTR {(data.summary.ctr * 100).toFixed(1)}%
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <AnalyticsCharts series={data.series} range={range} />
+
+            <div className="rounded-lg bg-white p-6 shadow-2xl">
+              <h2 className="mb-4 text-xl font-bold text-gray-800">
+                Link breakdown
+              </h2>
+              {data.links.length === 0 ? (
+                <p className="text-gray-500">No links on your profile yet.</p>
+              ) : (
+                <ul className="divide-y divide-gray-100">
+                  {data.links.map((link, i) => (
+                    <li
+                      key={i}
+                      className="flex flex-wrap items-center justify-between gap-3 py-4 first:pt-0"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-gray-800">
+                          {link.name}
+                        </p>
+                        <p className="truncate text-xs text-gray-500">
+                          {link.url}
+                        </p>
+                      </div>
+                      <span className="shrink-0 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-1.5 text-sm font-bold text-white">
+                        {link.clicks.toLocaleString()} clicks
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </>
+        )}
 
         <p className="mt-8 text-center">
           <Link

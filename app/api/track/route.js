@@ -1,4 +1,5 @@
 import clientPromise from "@/lib/magodb";
+import { dailyClickIncFields } from "@/lib/analyticsDaily";
 
 function normalizeHandle(handle) {
   return handle?.trim().toLowerCase();
@@ -69,11 +70,10 @@ export async function POST(request) {
 
     const { item, targetUrl } = resolved;
     const client = await clientPromise;
-    const clickField = `analytics.linkClicks.${index}`;
     await client
       .db("bittree")
       .collection("links")
-      .updateOne({ _id: item._id }, { $inc: { [clickField]: 1 } });
+      .updateOne({ _id: item._id }, { $inc: dailyClickIncFields(index) });
 
     return Response.json({ success: true, url: targetUrl });
   } catch (error) {

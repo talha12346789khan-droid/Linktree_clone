@@ -77,7 +77,7 @@ export async function POST(request) {
       links,
       userId: session.user.id,
       userEmail: session.user.email,
-      analytics: { profileViews: 0, linkClicks: {} },
+      analytics: { profileViews: 0, linkClicks: {}, daily: {} },
       createdAt: new Date(),
       updatedAt: new Date()
     })

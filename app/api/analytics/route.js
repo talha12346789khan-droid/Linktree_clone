@@ -1,7 +1,15 @@
 import clientPromise from "@/lib/magodb";
 import { auth } from "@/lib/auth";
+import {
+  parseRange,
+  buildViewsByDay,
+  buildClicksByDay,
+  buildClicksByLink,
+  sumViewsInRange,
+  sumClicksInRange,
+} from "@/lib/analyticsDaily";
 
-export async function GET() {
+export async function GET(request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -10,6 +18,9 @@ export async function GET() {
         { status: 401 }
       );
     }
+
+    const { searchParams } = new URL(request.url);
+    const range = parseRange(searchParams);
 
     const client = await clientPromise;
     const db = client.db("bittree");
@@ -31,15 +42,18 @@ export async function GET() {
     const analytics = doc.analytics || {};
     const profileViews = analytics.profileViews || 0;
     const linkClicks = analytics.linkClicks || {};
+    const daily = analytics.daily || {};
     const links = doc.links || [];
 
-    const linksWithStats = links.map((link, index) => ({
-      name: link.name,
-      url: link.url,
-      clicks: linkClicks[String(index)] || linkClicks[index] || 0,
-    }));
-
+    const linksWithStats = buildClicksByLink(links, linkClicks);
     const totalClicks = linksWithStats.reduce((sum, l) => sum + l.clicks, 0);
+
+    const viewsInRange = sumViewsInRange(daily, range);
+    const clicksInRange = sumClicksInRange(daily, range);
+    const ctr =
+      viewsInRange > 0
+        ? Math.round((clicksInRange / viewsInRange) * 1000) / 1000
+        : 0;
 
     return Response.json({
       success: true,
@@ -48,6 +62,17 @@ export async function GET() {
         profileViews,
         totalClicks,
         links: linksWithStats,
+        range,
+        series: {
+          viewsByDay: buildViewsByDay(daily, range),
+          clicksByDay: buildClicksByDay(daily, range),
+          clicksByLink: linksWithStats,
+        },
+        summary: {
+          viewsInRange,
+          clicksInRange,
+          ctr,
+        },
       },
     });
   } catch (error) {

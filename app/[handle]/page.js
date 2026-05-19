@@ -2,6 +2,7 @@ import clientPromise from "@/lib/magodb";
 import { auth } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import ProfileView from "@/component/ProfileView";
+import { dailyViewIncFields } from "@/lib/analyticsDaily";
 
 async function getReviewsForHandle(handle, viewerId) {
   const client = await clientPromise;
@@ -57,7 +58,7 @@ export default async function Page({ params }) {
   if (!isOwnerViewingSelf) {
     await collection.updateOne(
       { _id: item._id },
-      { $inc: { "analytics.profileViews": 1 } }
+      { $inc: dailyViewIncFields() }
     );
   }
 
