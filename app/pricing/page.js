@@ -1,13 +1,6 @@
-import CategoryIndexPage from "@/component/CategoryIndexPage";
-import { navMenus } from "@/lib/navMenus";
+import { makeCategoryIndexPage } from "@/lib/makeCategoryIndexPage";
 
-const menu = navMenus.find((m) => m.key === "pricing");
+const { Page, metadata } = makeCategoryIndexPage("pricing");
 
-export const metadata = {
-  title: "Pricing | LinkTree Clone",
-  description: "Browse LinkTree Clone pricing plans.",
-};
-
-export default function PricingIndexPage() {
-  return <CategoryIndexPage menu={menu} />;
-}
+export { metadata };
+export default Page;

@@ -11,14 +11,16 @@ const Footer = () => {
 
   let footerClasses = "mt-auto px-4 py-4 text-center text-sm";
 
-  if (pathname === "/" || isMarketingPage) {
-    footerClasses += " bg-[#d2e823] text-cyan-800";
-  } else if (
+  if (
+    pathname === "/" ||
+    isMarketingPage ||
     pathname?.startsWith("/generate") ||
     pathname?.startsWith("/auth")
   ) {
     footerClasses +=
-      " bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600 text-purple-100";
+      pathname === "/"
+        ? " bg-[#d2e823] text-cyan-800"
+        : " bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600 text-purple-100";
   } else {
     footerClasses +=
       " bg-gradient-to-br from-cyan-800 to-cyan-900 text-cyan-100";

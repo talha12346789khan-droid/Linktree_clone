@@ -1,38 +1,59 @@
 import Link from "next/link";
-import { getNavItemHref } from "@/lib/navMenus";
+import {
+  MarketingShell,
+  MarketingHero,
+  MarketingCard,
+  SectionTitle,
+  GradientButton,
+  Breadcrumb,
+} from "@/component/MarketingLayout";
 
-export default function CategoryIndexPage({ menu }) {
+export default function CategoryIndexPage({ data }) {
+  const { key, label, tagline, description, items } = data;
+
   return (
-    <main className="flex flex-1 flex-col bg-[#d2e823]">
-      <section className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center px-4 py-24 md:py-32">
-        <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-cyan-900/70">
-          Explore
-        </p>
-        <h1 className="text-3xl font-bold text-cyan-900 md:text-5xl">
-          {menu.label}
-        </h1>
-        <p className="mt-4 text-base text-cyan-900/90 md:text-lg">
-          Browse all {menu.label.toLowerCase()} pages in this demo.
-        </p>
-        <ul className="mt-8 space-y-3">
-          {menu.items.map((item) => (
-            <li key={item.slug}>
-              <Link
-                href={getNavItemHref(menu.key, item.slug)}
-                className="block rounded-lg border border-cyan-900/15 bg-white/50 px-4 py-3 font-medium text-cyan-900 transition hover:bg-white hover:shadow-sm"
-              >
-                {item.label}
-              </Link>
-            </li>
+    <MarketingShell>
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label, href: `/${key}` },
+        ]}
+      />
+
+      <MarketingHero categoryLabel="Explore" title={label} tagline={tagline} />
+
+      <MarketingCard className="mb-6">
+        <SectionTitle>About {label}</SectionTitle>
+        <p className="leading-relaxed text-gray-600 md:text-lg">{description}</p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <GradientButton href="/generate">Get started free</GradientButton>
+          <GradientButton href="/" variant="secondary">
+            Back to home
+          </GradientButton>
+        </div>
+      </MarketingCard>
+
+      <MarketingCard>
+        <SectionTitle>All {label} pages</SectionTitle>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {items.map((item) => (
+            <Link
+              key={item.slug}
+              href={item.href}
+              className="group flex flex-col rounded-lg border border-gray-100 bg-gray-50 p-5 transition hover:border-purple-300 hover:bg-white hover:shadow-lg"
+            >
+              <span className="text-3xl">{item.icon}</span>
+              <h3 className="mt-3 text-lg font-bold text-gray-800 group-hover:text-purple-700">
+                {item.title}
+              </h3>
+              <p className="mt-2 flex-1 text-sm text-gray-600">{item.summary}</p>
+              <span className="mt-4 inline-flex items-center text-sm font-semibold text-purple-600 group-hover:underline">
+                Learn more →
+              </span>
+            </Link>
           ))}
-        </ul>
-        <Link
-          href="/"
-          className="mt-8 inline-block text-sm font-semibold text-cyan-900 underline-offset-2 hover:underline"
-        >
-          ← Back to home
-        </Link>
-      </section>
-    </main>
+        </div>
+      </MarketingCard>
+    </MarketingShell>
   );
 }
