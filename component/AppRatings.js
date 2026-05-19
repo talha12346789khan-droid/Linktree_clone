@@ -17,6 +17,7 @@ export default function AppRatings() {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const loadRatings = async () => {
     try {
@@ -63,6 +64,27 @@ export default function AppRatings() {
       toast.error("Failed to submit rating");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const deleteRating = async (itemId) => {
+    if (!window.confirm("Remove your rating and review? This cannot be undone.")) {
+      return;
+    }
+    setDeletingId(itemId);
+    try {
+      const res = await fetch("/api/app-ratings", { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(data.message);
+        await loadRatings();
+      } else {
+        toast.error(data.message);
+      }
+    } catch {
+      toast.error("Failed to delete rating");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -133,7 +155,7 @@ export default function AppRatings() {
                 Your rating
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                One rating per account. You can update yours anytime.
+                One rating per account. You can update or remove yours anytime.
               </p>
               {status === "authenticated" ? (
                 <>
@@ -186,11 +208,23 @@ export default function AppRatings() {
                       key={item.id}
                       className="rounded-lg border border-gray-100 p-4"
                     >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-semibold text-gray-800">
-                          {item.userName}
-                        </span>
-                        <StarDisplay rating={item.rating} size="sm" />
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-gray-800">
+                            {item.userName}
+                          </span>
+                          <StarDisplay rating={item.rating} size="sm" />
+                        </div>
+                        {item.isMine && (
+                          <button
+                            type="button"
+                            onClick={() => deleteRating(item.id)}
+                            disabled={deletingId === item.id}
+                            className="shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold text-red-700 transition hover:bg-red-100 disabled:opacity-50"
+                          >
+                            {deletingId === item.id ? "Deleting..." : "Delete"}
+                          </button>
+                        )}
                       </div>
                       <p className="mt-2 text-sm text-gray-600">
                         {item.comment}

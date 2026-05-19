@@ -3,6 +3,9 @@ import { auth } from "@/lib/auth";
 
 export async function GET() {
   try {
+    const session = await auth();
+    const viewerId = session?.user?.id;
+
     const client = await clientPromise;
     const db = client.db("bittree");
     const ratings = await db
@@ -31,6 +34,7 @@ export async function GET() {
         rating: r.rating,
         comment: r.comment,
         createdAt: r.createdAt,
+        isMine: !!(viewerId && r.userId === viewerId),
       })),
       summary: {
         count: ratings.length,
@@ -111,6 +115,42 @@ export async function POST(request) {
     console.error("App ratings POST error:", error);
     return Response.json(
       { success: false, message: "Failed to submit rating" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE() {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return Response.json(
+        { success: false, message: "Sign in to delete your rating" },
+        { status: 401 }
+      );
+    }
+
+    const client = await clientPromise;
+    const db = client.db("bittree");
+    const result = await db
+      .collection("app_ratings")
+      .deleteOne({ userId: session.user.id });
+
+    if (result.deletedCount === 0) {
+      return Response.json(
+        { success: false, message: "You have not rated the app yet" },
+        { status: 404 }
+      );
+    }
+
+    return Response.json({
+      success: true,
+      message: "Your rating was removed",
+    });
+  } catch (error) {
+    console.error("App ratings DELETE error:", error);
+    return Response.json(
+      { success: false, message: "Failed to delete rating" },
       { status: 500 }
     );
   }
