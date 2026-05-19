@@ -7,6 +7,7 @@ function normalizeHandle(handle) {
 
 export async function GET(request) {
   try {
+    const session = await auth();
     const { searchParams } = new URL(request.url);
     const handle = normalizeHandle(searchParams.get("handle"));
 
@@ -32,6 +33,8 @@ export async function GET(request) {
         ? ratings.reduce((sum, n) => sum + n, 0) / ratings.length
         : 0;
 
+    const viewerId = session?.user?.id;
+
     return Response.json({
       success: true,
       reviews: reviews.map((r) => ({
@@ -41,6 +44,7 @@ export async function GET(request) {
         rating: r.rating,
         comment: r.comment,
         createdAt: r.createdAt,
+        isMine: !!(viewerId && r.userId === viewerId),
       })),
       summary: {
         count: reviews.length,
@@ -152,6 +156,69 @@ export async function POST(request) {
     console.error("Reviews POST error:", error);
     return Response.json(
       { success: false, message: "Failed to submit review" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return Response.json(
+        { success: false, message: "Sign in to delete your review" },
+        { status: 401 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+    const handle = normalizeHandle(searchParams.get("handle"));
+
+    if (!handle) {
+      return Response.json(
+        { success: false, message: "Handle is required" },
+        { status: 400 }
+      );
+    }
+
+    const client = await clientPromise;
+    const db = client.db("bittree");
+    const linksCol = db.collection("links");
+    const reviewsCol = db.collection("reviews");
+
+    const profile = await linksCol.findOne({
+      handle: { $regex: `^${handle}$`, $options: "i" },
+    });
+
+    if (!profile) {
+      return Response.json(
+        { success: false, message: "Profile not found" },
+        { status: 404 }
+      );
+    }
+
+    const canonicalHandle = profile.handle.toLowerCase();
+
+    const result = await reviewsCol.deleteOne({
+      handle: canonicalHandle,
+      userId: session.user.id,
+    });
+
+    if (result.deletedCount === 0) {
+      return Response.json(
+        { success: false, message: "You have no review on this profile" },
+        { status: 404 }
+      );
+    }
+
+    return Response.json({
+      success: true,
+      message: "Your review was deleted",
+    });
+  } catch (error) {
+    console.error("Reviews DELETE error:", error);
+    return Response.json(
+      { success: false, message: "Failed to delete review" },
       { status: 500 }
     );
   }

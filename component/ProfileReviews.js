@@ -20,6 +20,8 @@ export default function ProfileReviews({
 
   const isOwner = session?.user?.id && session.user.id === ownerUserId;
 
+  const [deletingId, setDeletingId] = useState(null);
+
   const loadReviews = async () => {
     const res = await fetch(`/api/reviews?handle=${encodeURIComponent(handle)}`);
     const data = await res.json();
@@ -59,6 +61,30 @@ export default function ProfileReviews({
       toast.error("Failed to submit review");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const deleteReview = async (reviewId) => {
+    if (!window.confirm("Delete your review? This cannot be undone.")) {
+      return;
+    }
+    setDeletingId(reviewId);
+    try {
+      const res = await fetch(
+        `/api/reviews?handle=${encodeURIComponent(handle)}`,
+        { method: "DELETE" }
+      );
+      const data = await res.json();
+      if (data.success) {
+        toast.success(data.message);
+        await loadReviews();
+      } else {
+        toast.error(data.message);
+      }
+    } catch {
+      toast.error("Failed to delete review");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -130,11 +156,23 @@ export default function ProfileReviews({
               key={review.id}
               className="rounded-lg border border-gray-100 p-4"
             >
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-semibold text-gray-800">
-                  {review.userName}
-                </span>
-                <StarDisplay rating={review.rating} size="sm" />
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-gray-800">
+                    {review.userName}
+                  </span>
+                  <StarDisplay rating={review.rating} size="sm" />
+                </div>
+                {review.isMine && (
+                  <button
+                    type="button"
+                    onClick={() => deleteReview(review.id)}
+                    disabled={deletingId === review.id}
+                    className="shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold text-red-700 transition hover:bg-red-100 disabled:opacity-50"
+                  >
+                    {deletingId === review.id ? "Deleting..." : "Delete"}
+                  </button>
+                )}
               </div>
               <p className="mt-2 text-sm text-gray-600">{review.comment}</p>
               <p className="mt-2 text-xs text-gray-400">

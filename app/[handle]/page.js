@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import ProfileView from "@/component/ProfileView";
 
-async function getReviewsForHandle(handle) {
+async function getReviewsForHandle(handle, viewerId) {
   const client = await clientPromise;
   const db = client.db("bittree");
   const canonicalHandle = handle.toLowerCase();
@@ -27,6 +27,7 @@ async function getReviewsForHandle(handle) {
       rating: r.rating,
       comment: r.comment,
       createdAt: r.createdAt,
+      isMine: !!(viewerId && r.userId === viewerId),
     })),
     summary: {
       count: reviews.length,
@@ -60,7 +61,10 @@ export default async function Page({ params }) {
     );
   }
 
-  const { reviews, summary } = await getReviewsForHandle(item.handle);
+  const { reviews, summary } = await getReviewsForHandle(
+    item.handle,
+    session?.user?.id
+  );
 
   return (
     <ProfileView
