@@ -237,6 +237,14 @@ const Navbar = () => {
                       ✏️ My Links
                     </button>
                   </Link>
+                  <Link href="/analytics">
+                    <button
+                      onClick={() => setIsProfileOpen(false)}
+                      className='w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded transition text-sm'
+                    >
+                      📊 Analytics
+                    </button>
+                  </Link>
                   <Link href="/support">
                     <button
                       onClick={() => setIsProfileOpen(false)}
@@ -355,6 +363,11 @@ const Navbar = () => {
                 <Link href="/generate" className='block mb-1'>
                   <button className='cursor-pointer bg-slate-300 px-3 py-1 rounded text-xs w-full hover:bg-slate-400 transition'>
                     ✏️ My Links
+                  </button>
+                </Link>
+                <Link href="/analytics" className='block mb-1' onClick={() => setIsMenuOpen(false)}>
+                  <button className='cursor-pointer bg-indigo-100 text-indigo-800 px-3 py-1 rounded text-xs w-full hover:bg-indigo-200 transition font-semibold'>
+                    📊 Analytics
                   </button>
                 </Link>
                 <Link href="/support" className='block mb-1' onClick={() => setIsMenuOpen(false)}>

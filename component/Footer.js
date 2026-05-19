@@ -17,7 +17,8 @@ const Footer = () => {
     pathname?.startsWith("/generate") ||
     pathname?.startsWith("/auth") ||
     pathname?.startsWith("/support") ||
-    pathname?.startsWith("/admin");
+    pathname?.startsWith("/admin") ||
+    pathname?.startsWith("/analytics");
 
   let footerClasses = "mt-auto px-4 py-4 text-center text-sm";
 

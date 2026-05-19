@@ -33,7 +33,7 @@ export default function ProfileView({
             links.map((linkItem, index) => (
               <Link
                 key={index}
-                href={linkItem.url}
+                href={`/api/track?h=${encodeURIComponent(handle)}&i=${index}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block w-full"

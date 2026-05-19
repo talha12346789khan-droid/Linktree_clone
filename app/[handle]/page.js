@@ -1,4 +1,5 @@
 import clientPromise from "@/lib/magodb";
+import { auth } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import ProfileView from "@/component/ProfileView";
 
@@ -46,6 +47,17 @@ export default async function Page({ params }) {
 
   if (!item) {
     notFound();
+  }
+
+  const session = await auth();
+  const isOwnerViewingSelf =
+    session?.user?.id && item.userId && session.user.id === item.userId;
+
+  if (!isOwnerViewingSelf) {
+    await collection.updateOne(
+      { _id: item._id },
+      { $inc: { "analytics.profileViews": 1 } }
+    );
   }
 
   const { reviews, summary } = await getReviewsForHandle(item.handle);
