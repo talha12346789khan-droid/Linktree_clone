@@ -18,17 +18,48 @@ export default function ProfileView({
     async (index, fallbackUrl) => {
       if (trackingRef.current) return;
       trackingRef.current = true;
+
+      // Open a tab synchronously on click (required so popup blockers allow it).
+      // After the POST returns, point that tab at the real URL.
+      let tab = null;
+      try {
+        tab = window.open("about:blank", "_blank");
+      } catch {
+        tab = null;
+      }
+
       try {
         const res = await fetch("/api/track", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ h: handle, i: index }),
-          keepalive: true,
         });
+
         const data = await res.json().catch(() => ({}));
-        const url = data.success && data.url ? data.url : fallbackUrl;
-        if (url) {
-          window.open(url, "_blank", "noopener,noreferrer");
+        const url =
+          data.success && typeof data.url === "string" ? data.url : fallbackUrl;
+
+        if (!url) return;
+
+        if (tab && !tab.closed) {
+          tab.location.replace(url);
+        } else {
+          const second = window.open(url, "_blank", "noopener,noreferrer");
+          if (!second) {
+            window.location.assign(url);
+          }
+        }
+      } catch {
+        if (tab && !tab.closed) {
+          try {
+            tab.close();
+          } catch {
+            /* ignore */
+          }
+        }
+        if (fallbackUrl) {
+          const w = window.open(fallbackUrl, "_blank", "noopener,noreferrer");
+          if (!w) window.location.assign(fallbackUrl);
         }
       } finally {
         trackingRef.current = false;
