@@ -436,6 +436,14 @@ const Navbar = () => {
                           🛡️ Moderation
                         </button>
                       </Link>
+                      <Link href="/admin/stats">
+                        <button
+                          onClick={() => setIsProfileOpen(false)}
+                          className='w-full text-left px-4 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded transition text-sm font-semibold'
+                        >
+                          📊 Site stats
+                        </button>
+                      </Link>
                     </>
                   )}
                   <button
@@ -536,6 +544,11 @@ const Navbar = () => {
                     <Link href="/admin/moderation" className='block mb-1' onClick={() => setIsMenuOpen(false)}>
                       <button className='cursor-pointer bg-red-100 text-red-800 px-3 py-1 rounded text-xs w-full hover:bg-red-200 transition font-semibold'>
                         🛡️ Moderation
+                      </button>
+                    </Link>
+                    <Link href="/admin/stats" className='block mb-1' onClick={() => setIsMenuOpen(false)}>
+                      <button className='cursor-pointer bg-indigo-100 text-indigo-800 px-3 py-1 rounded text-xs w-full hover:bg-indigo-200 transition font-semibold'>
+                        📊 Site stats
                       </button>
                     </Link>
                   </>

@@ -149,12 +149,20 @@ export default function AdminModerationPage() {
               Review reports and manage banned users
             </p>
           </div>
-          <Link
-            href="/admin/support"
-            className="rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30"
-          >
-            Support inbox →
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/admin/stats"
+              className="rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30"
+            >
+              Site stats →
+            </Link>
+            <Link
+              href="/admin/support"
+              className="rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30"
+            >
+              Support inbox →
+            </Link>
+          </div>
         </div>
 
         {loading ? (
@@ -176,6 +184,11 @@ export default function AdminModerationPage() {
                     >
                       <p className="text-xs text-gray-500">
                         @{r.handle} · reported by {r.reporterName}
+                        {r.reporterRole === "owner" && (
+                          <span className="ml-1 rounded bg-purple-100 px-1.5 py-0.5 font-semibold text-purple-800">
+                            profile owner
+                          </span>
+                        )}
                       </p>
                       <p className="mt-2 text-sm font-semibold text-gray-800">
                         {r.reviewUserName} — {r.reviewRating}★

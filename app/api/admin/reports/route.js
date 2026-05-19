@@ -32,6 +32,7 @@ export async function GET() {
         reviewRating: r.reviewRating,
         reporterName: r.reporterName,
         reporterEmail: r.reporterEmail,
+        reporterRole: r.reporterRole || "visitor",
         reason: r.reason,
         createdAt: r.createdAt,
       })),

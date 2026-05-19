@@ -3,6 +3,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AppRatings from "@/component/AppRatings";
+import SiteVisitTracker from "@/component/SiteVisitTracker";
+
 export default function Home() {
   const router = useRouter();
   const [text, setText] = useState("");
@@ -17,6 +19,7 @@ export default function Home() {
 
   return (
    <main className="flex flex-1 flex-col bg-[#d2e823]">
+    <SiteVisitTracker />
     <section className="grid flex-1 grid-cols-1 gap-8 px-4 md:grid-cols-2 md:gap-0 md:px-0">
    
     <div className="flex flex-col justify-center md:ml-[10vw] mt-50">

@@ -96,14 +96,15 @@ export default function ProfileReviews({
     }
   };
 
-  const reportReview = async (reviewId) => {
+  const reportReview = async (reviewId, asOwner = false) => {
     if (status !== "authenticated") {
       signIn(undefined, { callbackUrl: `/${handle}` });
       return;
     }
-    const reason =
-      window.prompt("Why are you reporting this review? (spam, harassment, etc.)") ||
-      "spam";
+    const promptText = asOwner
+      ? "Report this reviewer to admin? Describe the issue (spam, fake review, harassment):"
+      : "Why are you reporting this review? (spam, harassment, etc.)";
+    const reason = window.prompt(promptText) || (asOwner ? "spam on my profile" : "spam");
     if (!reason.trim()) return;
 
     setReportingId(reviewId);
@@ -181,8 +182,7 @@ export default function ProfileReviews({
 
       {isOwner && (
         <p className="mb-4 text-sm text-gray-500">
-          You can remove spam reviews from your profile or wait for admin action on
-          reports.
+          You can delete spam reviews, or report the reviewer to admin for review.
         </p>
       )}
 
@@ -217,14 +217,18 @@ export default function ProfileReviews({
                       {deletingId === review.id ? "..." : "Delete"}
                     </button>
                   )}
-                  {!review.isMine && !isOwner && status === "authenticated" && (
+                  {!review.isMine && status === "authenticated" && (
                     <button
                       type="button"
-                      onClick={() => reportReview(review.id)}
+                      onClick={() => reportReview(review.id, isOwner)}
                       disabled={reportingId === review.id}
                       className="shrink-0 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 transition hover:bg-amber-100 disabled:opacity-50"
                     >
-                      {reportingId === review.id ? "..." : "Report"}
+                      {reportingId === review.id
+                        ? "..."
+                        : isOwner
+                          ? "Report user"
+                          : "Report"}
                     </button>
                   )}
                 </div>

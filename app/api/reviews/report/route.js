@@ -66,6 +66,9 @@ export async function POST(request) {
       );
     }
 
+    const isProfileOwner = profile.userId === session.user.id;
+    const reporterRole = isProfileOwner ? "owner" : "visitor";
+
     const existing = await reportsCol.findOne({
       reviewId: review._id.toString(),
       reporterId: session.user.id,
@@ -92,6 +95,7 @@ export async function POST(request) {
       reporterEmail: session.user.email,
       reporterName:
         session.user.name || session.user.email?.split("@")[0] || "User",
+      reporterRole,
       reason,
       status: "open",
       createdAt: new Date(),
@@ -99,7 +103,9 @@ export async function POST(request) {
 
     return Response.json({
       success: true,
-      message: "Report submitted. Our team will review it.",
+      message: isProfileOwner
+        ? "Report sent to admin. You can also delete the review from your profile."
+        : "Report submitted. Our team will review it.",
     });
   } catch (error) {
     console.error("Review report error:", error);
