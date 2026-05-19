@@ -129,7 +129,7 @@ export default async function Page({ params }) {
   }
 
   return (
-    <div className="flex min-h-screen justify-center bg-gradient-to-br from-cyan-800 to-cyan-900 p-4 md:p-6">
+    <div className="flex flex-1 justify-center bg-gradient-to-br from-cyan-800 to-cyan-900 p-4 md:p-6">
       <div className="photo gap-4 flex justify-center items-center flex-col w-full max-w-md py-8 md:py-0">
        {item.picture &&( <img
           className="rounded-full my-4 md:my-5 w-32 h-32 md:w-40 md:h-40 object-cover border-4 border-white shadow-lg" 

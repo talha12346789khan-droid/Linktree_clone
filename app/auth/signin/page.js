@@ -16,7 +16,7 @@ function SignInContent() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600 flex items-center justify-center p-4 ">
+    <main className="flex flex-1 flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600 p-4">
       <div className="bg-white rounded-lg shadow-2xl p-6 sm:p-8 max-w-sm w-full">
         <div className="text-center mb-8">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">
@@ -56,7 +56,7 @@ function SignInContent() {
 export default function SignIn() {
   return (
     <Suspense fallback={
-      <main className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600 flex items-center justify-center">
+      <main className="flex flex-1 flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600">
         <div className="text-white text-lg">Loading...</div>
       </main>
     }>

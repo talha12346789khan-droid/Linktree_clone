@@ -272,20 +272,20 @@ const GenerateContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600 p-4 md:p-6  ">
+    <div className="flex flex-1 flex-col bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600 p-4 md:p-6">
       <ToastContainer />
       
       {/* Loading state */}
       {status === "loading" && (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-white text-lg md:text-2xl">Loading...</div>
+        <div className="flex flex-1 items-center justify-center">
+          <p className="text-lg text-white md:text-2xl">Loading...</p>
         </div>
       )}
 
       {/* Authentication required state */}
       {status === "unauthenticated" && (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-white text-lg md:text-2xl">Redirecting to login...</div>
+        <div className="flex flex-1 items-center justify-center">
+          <p className="text-lg text-white md:text-2xl">Redirecting to login...</p>
         </div>
       )}
 
@@ -499,7 +499,7 @@ const GenerateContent = () => {
 
 function GenerateWrapper() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600 flex items-center justify-center"><p className="text-white">Loading...</p></div>}>
+    <Suspense fallback={<div className="flex flex-1 flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600"><p className="text-white">Loading...</p></div>}>
       <GenerateContent />
     </Suspense>
   );
