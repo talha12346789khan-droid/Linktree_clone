@@ -5,22 +5,24 @@ import { useCallback, useRef } from "react";
 import { ToastContainer } from "react-toastify";
 import LinkIconComponent from "@/component/LinkIcon";
 import ProfileReviews from "@/component/ProfileReviews";
+import { getVisibleLinks } from "@/lib/profileLinks";
+import { getTemplateById } from "@/lib/templates";
 
 export default function ProfileView({
   profile,
   initialReviews,
   initialSummary,
 }) {
-  const { handle, picture, links, userId } = profile;
+  const { handle, picture, links, userId, description, templateId } = profile;
+  const theme = getTemplateById(templateId);
+  const visibleLinks = getVisibleLinks(links || []);
   const trackingRef = useRef(false);
 
   const openTrackedLink = useCallback(
-    async (index, fallbackUrl) => {
+    async (originalIndex, fallbackUrl) => {
       if (trackingRef.current) return;
       trackingRef.current = true;
 
-      // Open a tab synchronously on click (required so popup blockers allow it).
-      // After the POST returns, point that tab at the real URL.
       let tab = null;
       try {
         tab = window.open("about:blank", "_blank");
@@ -32,7 +34,7 @@ export default function ProfileView({
         const res = await fetch("/api/track", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ h: handle, i: index }),
+          body: JSON.stringify({ h: handle, i: originalIndex }),
         });
 
         const data = await res.json().catch(() => ({}));
@@ -69,31 +71,45 @@ export default function ProfileView({
   );
 
   return (
-    <main className="flex flex-1 flex-col bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600 p-4 md:p-6">
+    <main className={`flex flex-1 flex-col p-4 md:p-6 ${theme.page}`}>
       <ToastContainer />
       <div className="mx-auto mb-6 w-full max-w-md mt-50 md:mb-10">
-        <div className="rounded-lg bg-white p-6 shadow-2xl text-center">
+        <div
+          className={`rounded-lg p-6 shadow-2xl text-center border ${theme.card}`}
+        >
           {picture && (
             <img
-              className="mx-auto h-32 w-32 rounded-full border-4 border-purple-200 object-cover shadow-lg md:h-40 md:w-40"
+              className={`mx-auto h-32 w-32 rounded-full border-4 object-cover shadow-lg md:h-40 md:w-40 ${theme.avatarBorder}`}
               src={picture}
               alt={`${handle} profile`}
             />
           )}
-          <h1 className="mt-4 text-2xl font-bold text-gray-800">@{handle}</h1>
-          <p className="mt-1 text-sm text-purple-600">Link in bio</p>
+          <h1 className={`mt-4 text-2xl font-bold ${theme.cardTitle}`}>
+            @{handle}
+          </h1>
+          {description ? (
+            <p className={`mt-3 text-sm leading-relaxed ${theme.bio}`}>
+              {description}
+            </p>
+          ) : (
+            <p className={`mt-1 text-sm ${theme.cardSub}`}>Link in bio</p>
+          )}
         </div>
 
         <div className="mt-6 w-full space-y-3">
-          {links?.length > 0 ? (
-            links.map((linkItem, index) => (
+          {visibleLinks.length > 0 ? (
+            visibleLinks.map((linkItem) => (
               <button
-                key={index}
+                key={linkItem.originalIndex}
                 type="button"
-                onClick={() => openTrackedLink(index, linkItem.url)}
+                onClick={() =>
+                  openTrackedLink(linkItem.originalIndex, linkItem.url)
+                }
                 className="block w-full cursor-pointer text-left"
               >
-                <div className="flex w-full items-center justify-center gap-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:scale-[1.02] hover:shadow-xl md:py-4 md:text-base">
+                <div
+                  className={`flex w-full items-center justify-center gap-3 rounded-lg px-4 py-3.5 text-sm font-semibold shadow-lg transition md:py-4 md:text-base ${theme.button}`}
+                >
                   <span className="flex-shrink-0">
                     <LinkIconComponent linkName={linkItem.name} />
                   </span>
@@ -102,8 +118,10 @@ export default function ProfileView({
               </button>
             ))
           ) : (
-            <div className="rounded-lg bg-white/90 py-6 text-center text-gray-600 shadow-lg">
-              No links added yet
+            <div
+              className={`rounded-lg py-6 text-center shadow-lg ${theme.card}`}
+            >
+              <p className={theme.bio}>No links available</p>
             </div>
           )}
         </div>
@@ -114,13 +132,14 @@ export default function ProfileView({
             ownerUserId={userId}
             initialReviews={initialReviews}
             initialSummary={initialSummary}
+            theme={theme}
           />
         </div>
 
         <div className="mt-6 text-center">
           <Link
             href="/support"
-            className="text-sm font-semibold text-purple-100 underline-offset-2 hover:text-white hover:underline"
+            className="text-sm font-semibold text-white/90 underline-offset-2 hover:text-white hover:underline"
           >
             Need help? Contact customer support →
           </Link>

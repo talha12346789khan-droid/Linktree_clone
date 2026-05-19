@@ -71,6 +71,8 @@ export default async function Page({ params }) {
       profile={{
         handle: item.handle,
         picture: item.picture,
+        description: item.description || "",
+        templateId: item.templateId || "purple-pink",
         links: item.links || [],
         userId: item.userId,
       }}

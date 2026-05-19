@@ -26,7 +26,12 @@ async function resolveLink(handle, index) {
     return { error: "not_found" };
   }
 
-  const targetUrl = item.links[index].url?.trim();
+  const link = item.links[index];
+  if (link.enabled === false) {
+    return { error: "disabled" };
+  }
+
+  const targetUrl = link.url?.trim();
   if (!targetUrl || !isAllowedRedirectUrl(targetUrl)) {
     return { error: "bad_url" };
   }

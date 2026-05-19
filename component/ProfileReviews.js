@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { toast } from "react-toastify";
 import { StarDisplay, StarInput } from "@/component/StarRating";
@@ -10,17 +10,24 @@ export default function ProfileReviews({
   ownerUserId,
   initialReviews,
   initialSummary,
+  theme,
 }) {
   const { data: session, status } = useSession();
   const [reviews, setReviews] = useState(initialReviews);
   const [summary, setSummary] = useState(initialSummary);
+  const [isProfileOwner, setIsProfileOwner] = useState(false);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+  const [reportingId, setReportingId] = useState(null);
 
   const isOwner = session?.user?.id && session.user.id === ownerUserId;
+  const accent = theme?.reviewsAccent || "text-purple-700";
 
-  const [deletingId, setDeletingId] = useState(null);
+  useEffect(() => {
+    if (isOwner) setIsProfileOwner(true);
+  }, [isOwner]);
 
   const loadReviews = async () => {
     const res = await fetch(`/api/reviews?handle=${encodeURIComponent(handle)}`);
@@ -28,6 +35,7 @@ export default function ProfileReviews({
     if (data.success) {
       setReviews(data.reviews);
       setSummary(data.summary);
+      setIsProfileOwner(!!data.isProfileOwner);
     }
   };
 
@@ -64,16 +72,16 @@ export default function ProfileReviews({
     }
   };
 
-  const deleteReview = async (reviewId) => {
-    if (!window.confirm("Delete your review? This cannot be undone.")) {
-      return;
-    }
+  const deleteReview = async (reviewId, asOwner = false) => {
+    const msg = asOwner
+      ? "Remove this review from your profile?"
+      : "Delete your review? This cannot be undone.";
+    if (!window.confirm(msg)) return;
+
     setDeletingId(reviewId);
     try {
-      const res = await fetch(
-        `/api/reviews?handle=${encodeURIComponent(handle)}`,
-        { method: "DELETE" }
-      );
+      const url = `/api/reviews?handle=${encodeURIComponent(handle)}&reviewId=${encodeURIComponent(reviewId)}`;
+      const res = await fetch(url, { method: "DELETE" });
       const data = await res.json();
       if (data.success) {
         toast.success(data.message);
@@ -88,6 +96,35 @@ export default function ProfileReviews({
     }
   };
 
+  const reportReview = async (reviewId) => {
+    if (status !== "authenticated") {
+      signIn(undefined, { callbackUrl: `/${handle}` });
+      return;
+    }
+    const reason =
+      window.prompt("Why are you reporting this review? (spam, harassment, etc.)") ||
+      "spam";
+    if (!reason.trim()) return;
+
+    setReportingId(reviewId);
+    try {
+      const res = await fetch("/api/reviews/report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ handle, reviewId, reason }),
+      });
+      const data = await res.json();
+      if (data.success) toast.success(data.message);
+      else toast.error(data.message);
+    } catch {
+      toast.error("Failed to submit report");
+    } finally {
+      setReportingId(null);
+    }
+  };
+
+  const canModerate = isOwner || isProfileOwner;
+
   return (
     <div className="w-full rounded-lg bg-white p-5 shadow-2xl md:p-6">
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -95,7 +132,7 @@ export default function ProfileReviews({
         {summary.count > 0 ? (
           <div className="flex items-center gap-2">
             <StarDisplay rating={summary.average} size="lg" />
-            <span className="text-sm font-semibold text-purple-700">
+            <span className={`text-sm font-semibold ${accent}`}>
               {summary.average} ({summary.count} review
               {summary.count !== 1 ? "s" : ""})
             </span>
@@ -106,7 +143,10 @@ export default function ProfileReviews({
       </div>
 
       {!isOwner && (
-        <form onSubmit={submitReview} className="mb-6 rounded-lg border border-purple-100 bg-purple-50/50 p-4">
+        <form
+          onSubmit={submitReview}
+          className="mb-6 rounded-lg border border-purple-100 bg-purple-50/50 p-4"
+        >
           <p className="mb-2 text-sm font-semibold text-gray-700">Leave a review</p>
           {status === "authenticated" ? (
             <>
@@ -141,13 +181,14 @@ export default function ProfileReviews({
 
       {isOwner && (
         <p className="mb-4 text-sm text-gray-500">
-          You cannot review your own profile. Reviews from other users appear below.
+          You can remove spam reviews from your profile or wait for admin action on
+          reports.
         </p>
       )}
 
       <ul className="space-y-4">
         {reviews.length === 0 ? (
-          <li className="text-center text-sm text-gray-500 py-4">
+          <li className="py-4 text-center text-sm text-gray-500">
             Be the first to leave a review!
           </li>
         ) : (
@@ -163,16 +204,30 @@ export default function ProfileReviews({
                   </span>
                   <StarDisplay rating={review.rating} size="sm" />
                 </div>
-                {review.isMine && (
-                  <button
-                    type="button"
-                    onClick={() => deleteReview(review.id)}
-                    disabled={deletingId === review.id}
-                    className="shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold text-red-700 transition hover:bg-red-100 disabled:opacity-50"
-                  >
-                    {deletingId === review.id ? "Deleting..." : "Delete"}
-                  </button>
-                )}
+                <div className="flex flex-wrap gap-1">
+                  {(review.isMine || canModerate) && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        deleteReview(review.id, canModerate && !review.isMine)
+                      }
+                      disabled={deletingId === review.id}
+                      className="shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold text-red-700 transition hover:bg-red-100 disabled:opacity-50"
+                    >
+                      {deletingId === review.id ? "..." : "Delete"}
+                    </button>
+                  )}
+                  {!review.isMine && !isOwner && status === "authenticated" && (
+                    <button
+                      type="button"
+                      onClick={() => reportReview(review.id)}
+                      disabled={reportingId === review.id}
+                      className="shrink-0 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 transition hover:bg-amber-100 disabled:opacity-50"
+                    >
+                      {reportingId === review.id ? "..." : "Report"}
+                    </button>
+                  )}
+                </div>
               </div>
               <p className="mt-2 text-sm text-gray-600">{review.comment}</p>
               <p className="mt-2 text-xs text-gray-400">

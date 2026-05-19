@@ -1,12 +1,13 @@
 import clientPromise from "@/lib/magodb"
 import { auth } from "@/lib/auth"
-import { ObjectId } from "mongodb"
+import { assertNotBanned } from "@/lib/banned"
+import { linksForSave } from "@/lib/profileLinks"
+import { isValidTemplateId } from "@/lib/templates"
 
 export async function PUT(request) {
   try {
-    // Get session to verify user is authenticated
     const session = await auth()
-    
+
     if (!session || !session.user) {
       return Response.json({
         success: false,
@@ -16,14 +17,26 @@ export async function PUT(request) {
       }, { status: 401 })
     }
 
+    const banMsg = await assertNotBanned(session)
+    if (banMsg) {
+      return Response.json({ success: false, message: banMsg }, { status: 403 })
+    }
+
     const body = await request.json()
-    console.log(body)
+    const links = linksForSave(body.links)
+    const description = (body.description ?? "").trim().slice(0, 500)
+
+    if (links.filter((l) => l.enabled).length === 0) {
+      return Response.json({
+        success: false,
+        message: "You need at least one enabled link with name and URL",
+      }, { status: 400 })
+    }
 
     const client = await clientPromise
     const db = client.db("bittree")
     const collection = db.collection("links")
 
-    // Find the handle and verify ownership
     const existingHandle = await collection.findOne({ handle: body.handle })
 
     if (!existingHandle) {
@@ -35,7 +48,6 @@ export async function PUT(request) {
       })
     }
 
-    // Check if user owns this handle
     if (existingHandle.userId !== session.user.id) {
       return Response.json({
         success: false,
@@ -45,16 +57,20 @@ export async function PUT(request) {
       }, { status: 403 })
     }
 
-    // Update existing document by handle
+    const updateFields = {
+      picture: body.picture || "",
+      description,
+      links,
+      updatedAt: new Date(),
+    }
+
+    if (body.templateId && isValidTemplateId(body.templateId)) {
+      updateFields.templateId = body.templateId
+    }
+
     const result = await collection.updateOne(
       { handle: body.handle },
-      {
-        $set: {
-          picture: body.picture,
-          links: body.links,
-          updatedAt: new Date()
-        }
-      }
+      { $set: updateFields }
     )
 
     if (result.matchedCount === 0) {
@@ -87,7 +103,7 @@ export async function PUT(request) {
 export async function GET(request) {
   try {
     const session = await auth()
-    
+
     if (!session || !session.user) {
       return Response.json({
         success: false,
@@ -126,8 +142,6 @@ export async function GET(request) {
       })
     }
 
-    // Check if user owns this handle
-    // Allow if userId matches, or if email matches (for session changes)
     if (item.userId !== session.user.id && item.userEmail !== session.user.email) {
       return Response.json({
         success: false,
@@ -137,7 +151,6 @@ export async function GET(request) {
       }, { status: 403 })
     }
 
-    // Update userId if it was found by email but userId doesn't match
     if (item.userId !== session.user.id) {
       await collection.updateOne(
         { _id: item._id },

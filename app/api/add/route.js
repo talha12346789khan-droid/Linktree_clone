@@ -1,11 +1,13 @@
 import clientPromise from "@/lib/magodb"
 import { auth } from "@/lib/auth"
+import { assertNotBanned } from "@/lib/banned"
+import { linksForSave } from "@/lib/profileLinks"
+import { DEFAULT_TEMPLATE_ID, isValidTemplateId } from "@/lib/templates"
 
 export async function POST(request) {
   try {
-    // Get session to verify user is authenticated
     const session = await auth()
-    
+
     if (!session || !session.user) {
       return Response.json({
         success: false,
@@ -15,14 +17,36 @@ export async function POST(request) {
       }, { status: 401 })
     }
 
+    const banMsg = await assertNotBanned(session)
+    if (banMsg) {
+      return Response.json({ success: false, message: banMsg }, { status: 403 })
+    }
+
     const body = await request.json()
-    console.log(body)
+    const templateId = isValidTemplateId(body.templateId)
+      ? body.templateId
+      : DEFAULT_TEMPLATE_ID
+    const description = (body.description || "").trim().slice(0, 500)
+    const links = linksForSave(body.links)
+
+    if (!body.handle?.trim()) {
+      return Response.json({
+        success: false,
+        message: "Handle is required",
+      }, { status: 400 })
+    }
+
+    if (links.filter((l) => l.enabled).length === 0) {
+      return Response.json({
+        success: false,
+        message: "Add at least one enabled link with name and URL",
+      }, { status: 400 })
+    }
 
     const client = await clientPromise
     const db = client.db("bittree")
     const collection = db.collection("links")
 
-    // Check if handle already exists
     const doc = await collection.findOne({ handle: body.handle })
 
     if (doc) {
@@ -34,7 +58,6 @@ export async function POST(request) {
       })
     }
 
-    // Check if user already has a handle
     const userHandle = await collection.findOne({ userId: session.user.id })
 
     if (userHandle) {
@@ -46,13 +69,15 @@ export async function POST(request) {
       })
     }
 
-    // Insert new document with user info
     const result = await collection.insertOne({
-      handle: body.handle,
-      picture: body.picture,
-      links: body.links,
+      handle: body.handle.trim(),
+      picture: body.picture || "",
+      description,
+      templateId,
+      links,
       userId: session.user.id,
       userEmail: session.user.email,
+      analytics: { profileViews: 0, linkClicks: {} },
       createdAt: new Date(),
       updatedAt: new Date()
     })
