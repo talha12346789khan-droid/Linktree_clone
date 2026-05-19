@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   LineChart,
   Line,
@@ -15,7 +16,7 @@ import {
 const PURPLE = "#9333ea";
 const PINK = "#db2777";
 
-function ChartCard({ title, subtitle, children, empty }) {
+function ChartCard({ title, subtitle, children, empty, emptyLabel }) {
   return (
     <div className="rounded-lg bg-white p-5 shadow-2xl md:p-6">
       <h2 className="text-lg font-bold text-gray-800">{title}</h2>
@@ -25,7 +26,7 @@ function ChartCard({ title, subtitle, children, empty }) {
       <div className="mt-4 h-56 w-full">
         {empty ? (
           <div className="flex h-full items-center justify-center text-sm text-gray-400">
-            No activity in this period yet
+            {emptyLabel}
           </div>
         ) : (
           children
@@ -40,6 +41,7 @@ function hasAnyCount(data) {
 }
 
 export default function AnalyticsCharts({ series, range }) {
+  const t = useTranslations("analytics");
   const views = series?.viewsByDay || [];
   const clicks = series?.clicksByDay || [];
   const byLink = series?.clicksByLink || [];
@@ -47,9 +49,10 @@ export default function AnalyticsCharts({ series, range }) {
   return (
     <div className="mb-6 space-y-6">
       <ChartCard
-        title="Profile views"
-        subtitle={`Last ${range} days (UTC)`}
+        title={t("chartViews")}
+        subtitle={t("chartViewsSub", { days: range })}
         empty={!hasAnyCount(views)}
+        emptyLabel={t("noActivity")}
       >
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={views}>
@@ -75,9 +78,10 @@ export default function AnalyticsCharts({ series, range }) {
       </ChartCard>
 
       <ChartCard
-        title="Link clicks"
-        subtitle={`Total clicks per day — last ${range} days`}
+        title={t("chartClicks")}
+        subtitle={t("chartClicksSub", { days: range })}
         empty={!hasAnyCount(clicks)}
+        emptyLabel={t("noActivity")}
       >
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={clicks}>
@@ -103,9 +107,10 @@ export default function AnalyticsCharts({ series, range }) {
       </ChartCard>
 
       <ChartCard
-        title="Clicks per link"
-        subtitle="All-time clicks (lifetime)"
+        title={t("chartPerLink")}
+        subtitle={t("chartPerLinkSub")}
         empty={byLink.length === 0 || !byLink.some((l) => l.clicks > 0)}
+        emptyLabel={t("noActivity")}
       >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={byLink} layout="vertical" margin={{ left: 8, right: 16 }}>

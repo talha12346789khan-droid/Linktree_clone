@@ -1,6 +1,8 @@
 import clientPromise from "@/lib/magodb";
 import { auth } from "@/lib/auth";
 import { notFound } from "next/navigation";
+import { setRequestLocale } from "next-intl/server";
+import { locales } from "@/i18n/routing";
 import ProfileView from "@/component/ProfileView";
 import { dailyViewIncFields } from "@/lib/analyticsDaily";
 
@@ -38,7 +40,14 @@ async function getReviewsForHandle(handle, viewerId) {
 }
 
 export default async function Page({ params }) {
-  const { handle } = await params;
+  const { locale, handle } = await params;
+
+  if (!locales.includes(locale) || locales.includes(handle?.toLowerCase())) {
+    notFound();
+  }
+
+  setRequestLocale(locale);
+
   const client = await clientPromise;
   const db = client.db("bittree");
   const collection = db.collection("links");

@@ -1,7 +1,9 @@
 "use client";
 import { ToastContainer, toast } from "react-toastify";
 import React, { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { useSession, signOut } from "next-auth/react";
 import LinkIconComponent from "@/component/LinkIcon";
 import TemplatePicker from "@/component/TemplatePicker";
@@ -10,6 +12,9 @@ import { normalizeLinks, emptyLink, linksForSave } from "@/lib/profileLinks";
 import { getTemplateById } from "@/lib/templates";
 
 const GenerateContent = () => {
+  const t = useTranslations("generate");
+  const tNav = useTranslations("nav");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
@@ -126,11 +131,11 @@ const GenerateContent = () => {
 
   const submitAllLinks = async () => {
     if (!handle) {
-      toast.error("Please fill in your handle");
+      toast.error(t("fillHandle"));
       return;
     }
     if (!hasEnabledValidLink()) {
-      toast.error("Add at least one enabled link with name and URL");
+      toast.error(t("needEnabledLink"));
       return;
     }
 
@@ -145,11 +150,11 @@ const GenerateContent = () => {
       };
       if (isEditing) {
         const success = await editLinks(payload);
-        if (success) toast.success("Profile updated successfully!");
+        if (success) toast.success(t("updated"));
       } else {
         const success = await addLinks(payload);
         if (success) {
-          toast.success("Your bitlink created successfully!");
+          toast.success(t("created"));
           setIsEditing(true);
           try {
             const response = await fetch(`/api/edit?handle=${handle}`);
@@ -263,13 +268,13 @@ const GenerateContent = () => {
 
       {status === "loading" && (
         <div className="flex flex-1 items-center justify-center">
-          <p className="text-lg text-white md:text-2xl">Loading...</p>
+          <p className="text-lg text-white md:text-2xl">{tCommon("loading")}</p>
         </div>
       )}
 
       {status === "unauthenticated" && (
         <div className="flex flex-1 items-center justify-center">
-          <p className="text-lg text-white md:text-2xl">Redirecting to login...</p>
+          <p className="text-lg text-white md:text-2xl">{t("redirectLogin")}</p>
         </div>
       )}
 
@@ -277,13 +282,13 @@ const GenerateContent = () => {
         <div className="my-4 md:my-10 max-w-2xl mx-auto">
           <div className="flex flex-col mt-50 md:flex-row md:justify-between md:items-center gap-4 mb-6 md:mb-8 bg-white rounded-lg p-4 shadow-lg">
             <div>
-              <p className="text-gray-700 font-semibold text-sm md:text-base">Logged in as:</p>
+              <p className="text-gray-700 font-semibold text-sm md:text-base">{tNav("loggedInAs")}</p>
               <p className="text-purple-600 font-bold text-sm md:text-lg truncate">
                 {session?.user?.email}
               </p>
               {isEditing && handle && (
                 <p className="text-gray-600 text-xs md:text-sm mt-1">
-                  Handle: <span className="font-bold">@{handle}</span>
+                  {tNav("handle")} <span className="font-bold">@{handle}</span>
                 </p>
               )}
             </div>
@@ -293,52 +298,50 @@ const GenerateContent = () => {
                   onClick={() => window.open(`/${handle}`, "_blank")}
                   className="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition text-sm md:text-base"
                 >
-                  View Profile
+                  {t("viewProfile")}
                 </button>
               )}
               <button
                 onClick={() => signOut({ callbackUrl: "/" })}
                 className="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition text-sm md:text-base"
               >
-                Sign Out
+                {tCommon("signOut")}
               </button>
             </div>
           </div>
 
           <div className="text-center mb-8 md:mb-10">
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2">
-              {isEditing ? "Edit Your LinkTree" : "Claim Your LinkTree"}
+              {isEditing ? t("editTitle") : t("claimTitle")}
             </h1>
             <p className="text-purple-100 text-sm md:text-base">
-              {isEditing
-                ? "Update template, links, and profile details"
-                : "Pick a template, add links, and publish your page"}
+              {isEditing ? t("editSubtitle") : t("claimSubtitle")}
             </p>
           </div>
 
           {isEditing && handle && (
             <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-6 rounded text-sm">
-              <p className="font-semibold">📌 One Handle Per Account</p>
-              <p>You can edit your template, description, and links below.</p>
+              <p className="font-semibold">📌 {t("oneHandleNote")}</p>
+              <p>{t("oneHandleDesc")}</p>
             </div>
           )}
 
           {isLoading && (
             <div className="bg-white rounded-lg shadow-2xl p-6 md:p-8 mb-8 text-center">
-              <p className="text-gray-600 text-sm md:text-base">Loading your profile...</p>
+              <p className="text-gray-600 text-sm md:text-base">{t("loadingProfile")}</p>
             </div>
           )}
 
           <div className="bg-white rounded-lg shadow-2xl p-4 md:p-8 mb-8">
             <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-6">
-              Profile setup
+              {t("profileSetup")}
             </h2>
 
             <div className="mb-6">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Choose Your Handle
+                {t("chooseHandle")}
                 {isEditing && (
-                  <span className="text-gray-500 text-xs ml-2">(Cannot be changed)</span>
+                  <span className="text-gray-500 text-xs ms-2">{t("cannotChange")}</span>
                 )}
               </label>
               <input
@@ -346,7 +349,7 @@ const GenerateContent = () => {
                 disabled={isEditing}
                 type="text"
                 value={handle || ""}
-                placeholder="e.g., johndoe"
+                placeholder={t("handlePlaceholder")}
                 className={`w-full px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm md:text-base ${
                   isEditing ? "bg-gray-100 cursor-not-allowed" : ""
                 }`}
@@ -361,12 +364,12 @@ const GenerateContent = () => {
 
             <div className="mb-6">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Profile description
+                {t("description")}
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Tell visitors about yourself..."
+                placeholder={t("descriptionPlaceholder")}
                 rows={3}
                 maxLength={500}
                 className="w-full px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm md:text-base"
@@ -376,18 +379,18 @@ const GenerateContent = () => {
 
             <div className="mb-6">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Profile Picture URL
+                {t("pictureUrl")}
               </label>
               <input
                 value={linkPicture || ""}
                 onChange={(e) => setLinkPicture(e.target.value)}
                 type="text"
-                placeholder="https://example.com/photo.jpg"
+                placeholder={t("picturePlaceholder")}
                 className="w-full px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm md:text-base"
               />
             </div>
 
-            <h3 className="text-lg font-bold text-gray-800 mb-4 border-t pt-6">Your links</h3>
+            <h3 className="text-lg font-bold text-gray-800 mb-4 border-t pt-6">{t("yourLinks")}</h3>
 
             {links.map((link, index) => (
               <div
@@ -399,7 +402,7 @@ const GenerateContent = () => {
                 }`}
               >
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-sm font-bold text-gray-700">Link {index + 1}</span>
+                  <span className="text-sm font-bold text-gray-700">{t("linkN", { n: index + 1 })}</span>
                   <div className="flex flex-wrap gap-1">
                     <button
                       type="button"
@@ -428,24 +431,24 @@ const GenerateContent = () => {
                           : "border-gray-300 bg-gray-200 text-gray-600"
                       }`}
                     >
-                      {link.enabled !== false ? "Enabled" : "Disabled"}
+                      {link.enabled !== false ? t("enabled") : t("disabled")}
                     </button>
                     <button
                       type="button"
                       onClick={() => removeLink(index)}
                       className="rounded border border-red-200 bg-red-50 px-2 py-1 text-xs font-semibold text-red-700"
                     >
-                      Delete
+                      {tCommon("delete")}
                     </button>
                   </div>
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Link Name
+                    {t("linkName")}
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g., My Portfolio"
+                    placeholder={t("linkNamePlaceholder")}
                     value={link.name}
                     onChange={(e) => updateLink(index, "name", e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
@@ -453,11 +456,11 @@ const GenerateContent = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Link URL
+                    {t("linkUrl")}
                   </label>
                   <input
                     type="text"
-                    placeholder="https://example.com"
+                    placeholder={t("linkUrlPlaceholder")}
                     value={link.url}
                     onChange={(e) => updateLink(index, "url", e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
@@ -471,7 +474,7 @@ const GenerateContent = () => {
               onClick={addNewLink}
               className="w-full md:w-fit bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-2 px-6 mb-6 rounded-lg hover:shadow-lg text-sm md:text-base"
             >
-              + Add Link
+              {t("addLink")}
             </button>
 
             <button
@@ -485,11 +488,11 @@ const GenerateContent = () => {
             >
               {isLoading
                 ? isEditing
-                  ? "Updating..."
-                  : "Creating..."
+                  ? t("updating")
+                  : t("creating")
                 : isEditing
-                  ? "Update your bitlink"
-                  : "Create your bitlink"}
+                  ? t("updateBitlink")
+                  : t("createBitlink")}
             </button>
 
             {isEditing && (
@@ -502,13 +505,13 @@ const GenerateContent = () => {
                     : "bg-gray-400 cursor-not-allowed opacity-60"
                 }`}
               >
-                {isLoading ? "Deleting..." : "🗑️ Delete my Handle"}
+                {isLoading ? t("deleting") : `🗑️ ${t("deleteHandle")}`}
               </button>
             )}
           </div>
 
           <div className={`rounded-lg shadow-2xl p-4 md:p-8 ${previewTheme.page}`}>
-            <h2 className="text-xl font-bold text-white mb-4 text-center">Live preview</h2>
+            <h2 className="text-xl font-bold text-white mb-4 text-center">{t("livePreview")}</h2>
             <div className={`mx-auto max-w-sm rounded-lg p-6 border ${previewTheme.card}`}>
               {linkPicture && (
                 <img
@@ -535,7 +538,7 @@ const GenerateContent = () => {
                     </div>
                   ))
                 ) : (
-                  <p className={`text-center text-sm ${previewTheme.bio}`}>Add links above</p>
+                  <p className={`text-center text-sm ${previewTheme.bio}`}>{t("addLinksAbove")}</p>
                 )}
               </div>
             </div>
@@ -547,11 +550,12 @@ const GenerateContent = () => {
 };
 
 function GenerateWrapper() {
+  const tCommon = useTranslations("common");
   return (
     <Suspense
       fallback={
         <div className="flex flex-1 flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600">
-          <p className="text-white">Loading...</p>
+          <p className="text-white">{tCommon("loading")}</p>
         </div>
       }
     >

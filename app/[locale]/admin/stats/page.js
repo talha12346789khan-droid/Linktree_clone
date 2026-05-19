@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { toast, ToastContainer } from "react-toastify";
 
 function StatCard({ label, value, hint }) {
@@ -17,6 +17,9 @@ function StatCard({ label, value, hint }) {
 }
 
 export default function AdminStatsPage() {
+  const t = useTranslations("admin");
+  const tCommon = useTranslations("common");
+  const tNav = useTranslations("nav");
   const { status } = useSession();
   const router = useRouter();
   const [stats, setStats] = useState(null);
@@ -52,7 +55,7 @@ export default function AdminStatsPage() {
   if (status === "loading" || status === "unauthenticated") {
     return (
       <main className="flex flex-1 items-center justify-center bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600">
-        <p className="text-white">Loading...</p>
+        <p className="text-white">{tCommon("loading")}</p>
       </main>
     );
   }
@@ -60,10 +63,10 @@ export default function AdminStatsPage() {
   if (forbidden) {
     return (
       <main className="flex flex-1 flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600 p-6 text-center">
-        <h1 className="text-2xl font-bold text-white">Access denied</h1>
-        <p className="mt-2 text-purple-100">Admin email required in ADMIN_EMAIL.</p>
+        <h1 className="text-2xl font-bold text-white">{t("accessDenied")}</h1>
+        <p className="mt-2 text-purple-100">{t("adminEmailRequired")}</p>
         <Link href="/" className="mt-6 text-white underline">
-          Go home
+          {t("goHome")}
         </Link>
       </main>
     );
@@ -76,11 +79,9 @@ export default function AdminStatsPage() {
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-white md:text-3xl">
-              Site statistics
+              {t("statsTitle")}
             </h1>
-            <p className="text-sm text-purple-100">
-              Overview of visits, accounts, and handles
-            </p>
+            <p className="text-sm text-purple-100">{t("statsSubtitle")}</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
@@ -88,59 +89,59 @@ export default function AdminStatsPage() {
               onClick={loadStats}
               className="rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30"
             >
-              Refresh
+              {tCommon("refresh")}
             </button>
             <Link
               href="/admin/moderation"
               className="rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30"
             >
-              Moderation
+              {tNav("moderation")}
             </Link>
             <Link
               href="/admin/support"
               className="rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30"
             >
-              Support
+              {tNav("support")}
             </Link>
           </div>
         </div>
 
         {loading ? (
-          <p className="text-white">Loading stats...</p>
+          <p className="text-white">{tCommon("loading")}</p>
         ) : stats ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <StatCard
-              label="Website visits"
+              label={t("siteVisits")}
               value={stats.siteVisits.toLocaleString()}
-              hint="Homepage visits (once per browser session)"
+              hint={t("siteVisitsHint")}
             />
             <StatCard
-              label="Handles created"
+              label={t("handlesCreated")}
               value={stats.totalHandles.toLocaleString()}
-              hint="Total link-in-bio profiles"
+              hint={t("handlesHint")}
             />
             <StatCard
-              label="Users with accounts"
+              label={t("usersAccounts")}
               value={stats.totalUsers.toLocaleString()}
-              hint="Signed-in users who created a handle, rated, or reviewed"
+              hint={t("usersHint")}
             />
             <StatCard
-              label="Users with a handle"
+              label={t("usersWithHandle")}
               value={stats.usersWithHandle.toLocaleString()}
-              hint="Accounts that published a profile"
+              hint={t("usersWithHandleHint")}
             />
             <StatCard
-              label="Profile page views"
+              label={t("profileViews")}
               value={stats.totalProfileViews.toLocaleString()}
-              hint="All-time views across every @handle"
+              hint={t("profileViewsHint")}
             />
             <StatCard
-              label="Open review reports"
+              label={t("openReports")}
               value={stats.openReports.toLocaleString()}
-              hint="Pending moderation"
+              hint={t("openReportsHint")}
             />
             <StatCard
-              label="Banned users"
+              label={t("bannedUsers")}
               value={stats.bannedUsers.toLocaleString()}
             />
           </div>

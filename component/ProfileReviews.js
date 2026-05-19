@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { useSession, signIn } from "next-auth/react";
 import { toast } from "react-toastify";
 import { StarDisplay, StarInput } from "@/component/StarRating";
@@ -12,6 +13,8 @@ export default function ProfileReviews({
   initialSummary,
   theme,
 }) {
+  const t = useTranslations("reviews");
+  const tCommon = useTranslations("common");
   const { data: session, status } = useSession();
   const [reviews, setReviews] = useState(initialReviews);
   const [summary, setSummary] = useState(initialSummary);
@@ -46,7 +49,7 @@ export default function ProfileReviews({
       return;
     }
     if (isOwner) {
-      toast.error("You cannot review your own profile");
+      toast.error(t("cannotOwn"));
       return;
     }
 
@@ -73,9 +76,7 @@ export default function ProfileReviews({
   };
 
   const deleteReview = async (reviewId, asOwner = false) => {
-    const msg = asOwner
-      ? "Remove this review from your profile?"
-      : "Delete your review? This cannot be undone.";
+    const msg = asOwner ? t("removeConfirm") : t("deleteConfirm");
     if (!window.confirm(msg)) return;
 
     setDeletingId(reviewId);
@@ -101,9 +102,7 @@ export default function ProfileReviews({
       signIn(undefined, { callbackUrl: `/${handle}` });
       return;
     }
-    const promptText = asOwner
-      ? "Report this reviewer to admin? Describe the issue (spam, fake review, harassment):"
-      : "Why are you reporting this review? (spam, harassment, etc.)";
+    const promptText = asOwner ? t("reportOwnerPrompt") : t("reportPrompt");
     const reason = window.prompt(promptText) || (asOwner ? "spam on my profile" : "spam");
     if (!reason.trim()) return;
 
@@ -129,17 +128,16 @@ export default function ProfileReviews({
   return (
     <div className="w-full rounded-lg bg-white p-5 shadow-2xl md:p-6">
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-xl font-bold text-gray-800">Reviews</h2>
+        <h2 className="text-xl font-bold text-gray-800">{t("title")}</h2>
         {summary.count > 0 ? (
           <div className="flex items-center gap-2">
             <StarDisplay rating={summary.average} size="lg" />
             <span className={`text-sm font-semibold ${accent}`}>
-              {summary.average} ({summary.count} review
-              {summary.count !== 1 ? "s" : ""})
+              {t("average", { avg: summary.average, count: summary.count })}
             </span>
           </div>
         ) : (
-          <span className="text-sm text-gray-500">No reviews yet</span>
+          <span className="text-sm text-gray-500">{t("noReviews")}</span>
         )}
       </div>
 
@@ -148,14 +146,14 @@ export default function ProfileReviews({
           onSubmit={submitReview}
           className="mb-6 rounded-lg border border-purple-100 bg-purple-50/50 p-4"
         >
-          <p className="mb-2 text-sm font-semibold text-gray-700">Leave a review</p>
+          <p className="mb-2 text-sm font-semibold text-gray-700">{t("leaveReview")}</p>
           {status === "authenticated" ? (
             <>
               <StarInput value={rating} onChange={setRating} disabled={submitting} />
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Share your experience (min 10 characters)..."
+                placeholder={t("placeholder")}
                 rows={3}
                 className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                 disabled={submitting}
@@ -165,7 +163,7 @@ export default function ProfileReviews({
                 disabled={submitting}
                 className="mt-3 w-full rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 py-2.5 text-sm font-bold text-white transition hover:shadow-lg disabled:opacity-60 sm:w-auto sm:px-6"
               >
-                {submitting ? "Submitting..." : "Submit review"}
+                {submitting ? t("submitting") : t("submitReview")}
               </button>
             </>
           ) : (
@@ -174,7 +172,7 @@ export default function ProfileReviews({
               onClick={() => signIn(undefined, { callbackUrl: `/${handle}` })}
               className="mt-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-2 text-sm font-bold text-white"
             >
-              Sign in to review
+              {t("signInToReview")}
             </button>
           )}
         </form>
@@ -182,14 +180,14 @@ export default function ProfileReviews({
 
       {isOwner && (
         <p className="mb-4 text-sm text-gray-500">
-          You can delete spam reviews, or report the reviewer to admin for review.
+          {t("ownerHint")}
         </p>
       )}
 
       <ul className="space-y-4">
         {reviews.length === 0 ? (
           <li className="py-4 text-center text-sm text-gray-500">
-            Be the first to leave a review!
+            {t("firstReview")}
           </li>
         ) : (
           reviews.map((review) => (
@@ -214,7 +212,7 @@ export default function ProfileReviews({
                       disabled={deletingId === review.id}
                       className="shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold text-red-700 transition hover:bg-red-100 disabled:opacity-50"
                     >
-                      {deletingId === review.id ? "..." : "Delete"}
+                      {deletingId === review.id ? "..." : tCommon("delete")}
                     </button>
                   )}
                   {!review.isMine && status === "authenticated" && (
@@ -227,8 +225,8 @@ export default function ProfileReviews({
                       {reportingId === review.id
                         ? "..."
                         : isOwner
-                          ? "Report user"
-                          : "Report"}
+                          ? t("reportUser")
+                          : t("report")}
                     </button>
                   )}
                 </div>

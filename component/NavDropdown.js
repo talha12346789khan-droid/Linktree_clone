@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { getNavItemHref } from "@/lib/navMenus";
 
 const Chevron = ({ open, className = "" }) => (
@@ -21,6 +22,7 @@ const Chevron = ({ open, className = "" }) => (
 );
 
 export function DesktopNavDropdown({ menu }) {
+  const t = useTranslations("nav");
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -35,7 +37,7 @@ export function DesktopNavDropdown({ menu }) {
         href={`/${menu.key}`}
         className="flex items-center gap-1 text-xs transition hover:font-bold md:text-sm lg:text-lg"
       >
-        {menu.label}
+        {t(menu.key)}
         <Chevron open={open} className="h-2.5 w-2.5 md:h-3 md:w-3 lg:h-4 lg:w-4" />
       </Link>
 
@@ -66,6 +68,7 @@ export function DesktopNavDropdown({ menu }) {
 }
 
 export function MobileNavDropdown({ menu, onNavigate }) {
+  const t = useTranslations("nav");
   const [open, setOpen] = useState(false);
 
   const close = () => {
@@ -80,7 +83,7 @@ export function MobileNavDropdown({ menu, onNavigate }) {
         onClick={() => setOpen(!open)}
         className="flex w-full items-center justify-between text-left text-xs transition hover:font-bold"
       >
-        <span>{menu.label}</span>
+        <span>{t(menu.key)}</span>
         <Chevron open={open} className="h-3 w-3" />
       </button>
       {open && (

@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { Link, useRouter } from '@/i18n/navigation'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { toast, ToastContainer } from 'react-toastify'
 import { navMenus } from '@/lib/navMenus'
 import { DesktopNavDropdown, MobileNavDropdown } from '@/component/NavDropdown'
+import LanguageSwitcher from '@/component/LanguageSwitcher'
 
 function SearchIcon({ className = 'w-5 h-5' }) {
   return (
@@ -27,10 +28,13 @@ function SearchSpinner() {
 }
 
 function SearchResultsList({ searchQuery, searchResults, isLoading, userHandle, onSelect, compact }) {
+  const t = useTranslations('nav')
+  const tCommon = useTranslations('common')
+
   if (!searchQuery.trim()) {
     return (
       <p className={`text-center text-gray-400 ${compact ? 'py-4 text-xs' : 'py-6 text-sm'}`}>
-        Type a handle to find profiles
+        {t('typeToFind')}
       </p>
     )
   }
@@ -39,7 +43,7 @@ function SearchResultsList({ searchQuery, searchResults, isLoading, userHandle, 
     return (
       <div className={`flex items-center justify-center gap-2 text-gray-500 ${compact ? 'py-4 text-xs' : 'py-8 text-sm'}`}>
         <SearchSpinner />
-        <span>Searching...</span>
+        <span>{t('searching')}</span>
       </div>
     )
   }
@@ -50,9 +54,9 @@ function SearchResultsList({ searchQuery, searchResults, isLoading, userHandle, 
         <div className={`mx-auto mb-2 flex items-center justify-center rounded-full bg-gray-100 text-gray-400 ${compact ? 'h-10 w-10' : 'h-12 w-12'}`}>
           <SearchIcon className={compact ? 'h-5 w-5' : 'h-6 w-6'} />
         </div>
-        <p className={`font-medium text-gray-700 ${compact ? 'text-xs' : 'text-sm'}`}>No profiles found</p>
+        <p className={`font-medium text-gray-700 ${compact ? 'text-xs' : 'text-sm'}`}>{t('noProfilesFound')}</p>
         <p className={`mt-0.5 text-gray-400 ${compact ? 'text-[10px]' : 'text-xs'}`}>
-          Try another handle or spelling
+          {t('tryAnother')}
         </p>
       </div>
     )
@@ -102,7 +106,7 @@ function SearchResultsList({ searchQuery, searchResults, isLoading, userHandle, 
                 </span>
                 {isUserHandle && (
                   <span className='mt-0.5 inline-block rounded-full bg-purple-200/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-purple-800'>
-                    Your profile
+                    {tCommon('yourProfile')}
                   </span>
                 )}
               </span>
@@ -126,6 +130,8 @@ function SearchResultsList({ searchQuery, searchResults, isLoading, userHandle, 
 }
 
 function SearchInput({ value, onChange, onClear, compact, inputRef }) {
+  const t = useTranslations('nav')
+
   return (
     <div className={`relative flex items-center ${compact ? '' : ''}`}>
       <span className={`pointer-events-none absolute text-gray-400 ${compact ? 'left-3' : 'left-4'}`}>
@@ -134,7 +140,7 @@ function SearchInput({ value, onChange, onClear, compact, inputRef }) {
       <input
         ref={inputRef}
         type='search'
-        placeholder='Search @handles...'
+        placeholder={t('searchPlaceholder')}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className={`w-full border-0 bg-gray-50 font-medium text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/40 ${
@@ -165,6 +171,8 @@ function SearchInput({ value, onChange, onClear, compact, inputRef }) {
 }
 
 const Navbar = () => {
+  const t = useTranslations('nav')
+  const tCommon = useTranslations('common')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
@@ -313,7 +321,7 @@ const Navbar = () => {
                 ? 'bg-purple-100 text-purple-700'
                 : 'text-gray-600 hover:bg-gray-100 hover:text-purple-700'
             }`}
-            aria-label='Search profiles'
+            aria-label={t('searchProfiles')}
             aria-expanded={isSearchOpen}
           >
             <SearchIcon className='h-5 w-5' />
@@ -323,11 +331,11 @@ const Navbar = () => {
             <div
               className='absolute right-0 top-full z-50 mt-3 w-[min(100vw-2rem,22rem)] rounded-2xl border border-gray-100 bg-white shadow-2xl shadow-purple-500/10 ring-1 ring-black/5'
               role='dialog'
-              aria-label='Search profiles'
+              aria-label={t('searchProfiles')}
             >
               <div className='rounded-t-2xl border-b border-gray-100 bg-gradient-to-r from-purple-50/80 to-pink-50/80 px-4 py-3'>
-                <p className='text-xs font-semibold uppercase tracking-wider text-purple-700'>Find a profile</p>
-                <p className='mt-0.5 text-[11px] text-gray-500'>Search by @handle</p>
+                <p className='text-xs font-semibold uppercase tracking-wider text-purple-700'>{t('findProfile')}</p>
+                <p className='mt-0.5 text-[11px] text-gray-500'>{t('searchByHandle')}</p>
               </div>
               <div className='p-3'>
                 <SearchInput
@@ -347,11 +355,13 @@ const Navbar = () => {
                 />
               </div>
               <p className='rounded-b-2xl border-t border-gray-50 px-3 py-2 text-center text-[10px] text-gray-400'>
-                Esc to close
+                {tCommon('escToClose')}
               </p>
             </div>
           )}
         </div>
+
+        <LanguageSwitcher />
 
         {status === 'authenticated' ? (
           <div ref={profileRef} className='relative'>
@@ -359,19 +369,19 @@ const Navbar = () => {
               onClick={() => setIsProfileOpen(!isProfileOpen)}
               className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-1 md:py-1.5 lg:py-2 px-2 md:px-2.5 lg:px-6 text-xs lg:text-base rounded-full hover:shadow-lg transition whitespace-nowrap'
             >
-              <span className='hidden md:inline'>My Profile</span>
-              <span className='md:hidden'>Profile</span>
+              <span className='hidden md:inline'>{t('myProfile')}</span>
+              <span className='md:hidden'>{t('profile')}</span>
             </button>
 
             {/* Profile Dropdown */}
             {isProfileOpen && (
               <div className='absolute -right-4 md:right-0 top-12 w-56 md:w-64 bg-white shadow-2xl rounded-lg z-50 border border-gray-200 max-h-64 overflow-y-auto'>
                 <div className='p-4 border-b border-gray-200'>
-                  <p className='text-gray-600 text-sm'>Logged in as:</p>
+                  <p className='text-gray-600 text-sm'>{t('loggedInAs')}</p>
                   <p className='text-purple-600 font-bold text-sm mt-1 truncate'>{session?.user?.email}</p>
                   {userHandle && (
                     <p className='text-gray-600 text-xs mt-2'>
-                      Handle: <span className='font-bold text-blue-600'>@{userHandle}</span>
+                      {t('handle')} <span className='font-bold text-blue-600'>@{userHandle}</span>
                     </p>
                   )}
                 </div>
@@ -384,22 +394,22 @@ const Navbar = () => {
                       }}
                       className='w-full text-left px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded transition font-semibold text-sm'
                     >
-                      👁️ View My Profile
+                      👁️ {t('viewMyProfile')}
                     </button>
                   ) : (
                     <div className='w-full px-4 py-2 bg-yellow-50 text-yellow-700 rounded text-sm'>
-                      <p className='font-semibold mb-2'>⚠️ No Handle Found</p>
-                      <p className='text-xs mb-3'>You need to create a handle first to view your profile.</p>
+                      <p className='font-semibold mb-2'>⚠️ {t('noHandleFound')}</p>
+                      <p className='text-xs mb-3'>{t('noHandleHint')}</p>
                       <Link href="/generate">
                         <button className='w-full text-center px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700 text-xs font-semibold transition'>
-                          Create Handle
+                          {t('createHandle')}
                         </button>
                       </Link>
                     </div>
                   )}
                   <Link href="/generate">
                     <button className='w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded transition text-sm'>
-                      ✏️ My Links
+                      ✏️ {t('myLinks')}
                     </button>
                   </Link>
                   <Link href="/analytics">
@@ -407,7 +417,7 @@ const Navbar = () => {
                       onClick={() => setIsProfileOpen(false)}
                       className='w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded transition text-sm'
                     >
-                      📊 Analytics
+                      📊 {t('analytics')}
                     </button>
                   </Link>
                   <Link href="/support">
@@ -415,7 +425,7 @@ const Navbar = () => {
                       onClick={() => setIsProfileOpen(false)}
                       className='w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded transition text-sm'
                     >
-                      🆘 Support
+                      🆘 {t('support')}
                     </button>
                   </Link>
                   {isAdmin && (
@@ -425,7 +435,7 @@ const Navbar = () => {
                           onClick={() => setIsProfileOpen(false)}
                           className='w-full text-left px-4 py-2 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded transition text-sm font-semibold'
                         >
-                          👑 Admin inbox
+                          👑 {t('adminInbox')}
                         </button>
                       </Link>
                       <Link href="/admin/moderation">
@@ -433,7 +443,7 @@ const Navbar = () => {
                           onClick={() => setIsProfileOpen(false)}
                           className='w-full text-left px-4 py-2 bg-red-50 text-red-700 hover:bg-red-100 rounded transition text-sm font-semibold'
                         >
-                          🛡️ Moderation
+                          🛡️ {t('moderation')}
                         </button>
                       </Link>
                       <Link href="/admin/stats">
@@ -441,19 +451,19 @@ const Navbar = () => {
                           onClick={() => setIsProfileOpen(false)}
                           className='w-full text-left px-4 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded transition text-sm font-semibold'
                         >
-                          📊 Site stats
+                          📊 {t('siteStats')}
                         </button>
                       </Link>
                     </>
                   )}
                   <button
                     onClick={() => {
-                      signOut({ callbackUrl: "/" })
+                      signOut({ callbackUrl: '/' })
                       setIsProfileOpen(false)
                     }}
                     className='w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded transition font-semibold text-sm'
                   >
-                    🚪 Logout
+                    🚪 {t('logout')}
                   </button>
                 </div>
               </div>
@@ -464,7 +474,7 @@ const Navbar = () => {
             onClick={() => signIn()}
             className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-1 md:py-1.5 lg:py-2 px-2 md:px-2.5 lg:px-6 text-xs lg:text-base rounded-full hover:shadow-lg transition whitespace-nowrap'
           >
-            Sign In
+            {tCommon('signIn')}
           </button>
         )}
       </div>
@@ -473,7 +483,7 @@ const Navbar = () => {
       <button
         className='md:hidden mr-2 flex flex-col gap-1 cursor-pointer'
         onClick={() => setIsMenuOpen(!isMenuOpen)}
-        aria-label='Toggle menu'
+        aria-label={t('toggleMenu')}
       >
         <span className={`block w-5 h-0.5 bg-black transition ${isMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
         <span className={`block w-5 h-0.5 bg-black transition ${isMenuOpen ? 'opacity-0' : ''}`}></span>
@@ -485,8 +495,11 @@ const Navbar = () => {
         <div className='absolute top-full left-2 right-2 bg-white shadow-lg rounded-2xl mt-1.5 md:hidden max-h-[calc(100vh-120px)] overflow-y-auto'>
           <div className='sticky top-0 z-10 border-b border-gray-100 bg-gradient-to-r from-purple-50/80 to-pink-50/80 p-3'>
             <p className='mb-2 text-xs font-semibold uppercase tracking-wider text-purple-700'>
-              Find a profile
+              {t('findProfile')}
             </p>
+            <div className='mb-2'>
+              <LanguageSwitcher compact />
+            </div>
             <SearchInput
               compact
               value={searchQuery}
@@ -516,51 +529,51 @@ const Navbar = () => {
             {status === 'authenticated' ? (
               <div className='px-2 py-1.5'>
                 <div className='bg-purple-50 border border-purple-200 rounded-lg p-2 mb-2'>
-                  <p className='text-gray-600 text-xs'>Logged in as:</p>
+                  <p className='text-gray-600 text-xs'>{t('loggedInAs')}</p>
                   <p className='text-purple-600 font-bold text-xs mt-1 truncate'>{session?.user?.email}</p>
                 </div>
                 <Link href="/generate" className='block mb-1'>
                   <button className='cursor-pointer bg-slate-300 px-3 py-1 rounded text-xs w-full hover:bg-slate-400 transition'>
-                    ✏️ My Links
+                    ✏️ {t('myLinks')}
                   </button>
                 </Link>
                 <Link href="/analytics" className='block mb-1' onClick={() => setIsMenuOpen(false)}>
                   <button className='cursor-pointer bg-indigo-100 text-indigo-800 px-3 py-1 rounded text-xs w-full hover:bg-indigo-200 transition font-semibold'>
-                    📊 Analytics
+                    📊 {t('analytics')}
                   </button>
                 </Link>
                 <Link href="/support" className='block mb-1' onClick={() => setIsMenuOpen(false)}>
                   <button className='cursor-pointer bg-slate-200 px-3 py-1 rounded text-xs w-full hover:bg-slate-300 transition'>
-                    🆘 Support
+                    🆘 {t('support')}
                   </button>
                 </Link>
                 {isAdmin && (
                   <>
                     <Link href="/admin/support" className='block mb-1' onClick={() => setIsMenuOpen(false)}>
                       <button className='cursor-pointer bg-purple-100 text-purple-800 px-3 py-1 rounded text-xs w-full hover:bg-purple-200 transition font-semibold'>
-                        👑 Admin inbox
+                        👑 {t('adminInbox')}
                       </button>
                     </Link>
                     <Link href="/admin/moderation" className='block mb-1' onClick={() => setIsMenuOpen(false)}>
                       <button className='cursor-pointer bg-red-100 text-red-800 px-3 py-1 rounded text-xs w-full hover:bg-red-200 transition font-semibold'>
-                        🛡️ Moderation
+                        🛡️ {t('moderation')}
                       </button>
                     </Link>
                     <Link href="/admin/stats" className='block mb-1' onClick={() => setIsMenuOpen(false)}>
                       <button className='cursor-pointer bg-indigo-100 text-indigo-800 px-3 py-1 rounded text-xs w-full hover:bg-indigo-200 transition font-semibold'>
-                        📊 Site stats
+                        📊 {t('siteStats')}
                       </button>
                     </Link>
                   </>
                 )}
                 <button 
                   onClick={() => {
-                    signOut({ callbackUrl: "/" })
+                    signOut({ callbackUrl: '/' })
                     setIsMenuOpen(false)
                   }}
                   className='cursor-pointer bg-red-600 text-white px-3 py-1 rounded text-xs w-full hover:bg-red-700 transition font-semibold'
                 >
-                  🚪 Logout
+                  🚪 {t('logout')}
                 </button>
               </div>
             ) : (
@@ -569,7 +582,7 @@ const Navbar = () => {
                   onClick={() => signIn()}
                   className='cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-1 px-3 rounded-full text-xs w-full hover:shadow-lg transition'
                 >
-                  Sign In
+                  {tCommon('signIn')}
                 </button>
               </div>
             )}

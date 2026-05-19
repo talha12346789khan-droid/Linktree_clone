@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useSession, signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
+import { useSession } from "next-auth/react";
 import { toast, ToastContainer } from "react-toastify";
 
 export default function SupportPage() {
+  const t = useTranslations("support");
+  const tCommon = useTranslations("common");
+  const tAdmin = useTranslations("admin");
   const { data: session, status } = useSession();
   const router = useRouter();
   const [tickets, setTickets] = useState([]);
@@ -64,7 +67,7 @@ export default function SupportPage() {
   if (status === "loading" || status === "unauthenticated") {
     return (
       <main className="flex flex-1 items-center justify-center bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600">
-        <p className="text-lg text-white">Loading...</p>
+        <p className="text-lg text-white">{tCommon("loading")}</p>
       </main>
     );
   }
@@ -75,19 +78,17 @@ export default function SupportPage() {
       <div className="mx-auto mb-6 w-full max-w-2xl mt-50 md:mb-10">
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-bold text-white md:text-4xl">
-            Customer Support
+            {t("title")}
           </h1>
-          <p className="mt-2 text-purple-100">
-            Submit a ticket and we will reply as soon as possible.
-          </p>
+          <p className="mt-2 text-purple-100">{t("subtitle")}</p>
         </div>
 
         <div className="mb-8 rounded-lg bg-white p-6 shadow-2xl">
-          <h2 className="mb-4 text-xl font-bold text-gray-800">New ticket</h2>
+          <h2 className="mb-4 text-xl font-bold text-gray-800">{t("newTicket")}</h2>
           <form onSubmit={submitTicket} className="space-y-4">
             <div>
               <label className="mb-1 block text-sm font-semibold text-gray-700">
-                Subject
+                {t("subject")}
               </label>
               <input
                 value={subject}
@@ -99,7 +100,7 @@ export default function SupportPage() {
             </div>
             <div>
               <label className="mb-1 block text-sm font-semibold text-gray-700">
-                Message
+                {t("message")}
               </label>
               <textarea
                 value={message}
@@ -115,17 +116,17 @@ export default function SupportPage() {
               disabled={submitting}
               className="w-full rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 py-3 font-bold text-white transition hover:shadow-lg disabled:opacity-60"
             >
-              {submitting ? "Sending..." : "Submit ticket"}
+              {submitting ? t("sending") : t("send")}
             </button>
           </form>
         </div>
 
         <div className="rounded-lg bg-white p-6 shadow-2xl">
-          <h2 className="mb-4 text-xl font-bold text-gray-800">Your tickets</h2>
+          <h2 className="mb-4 text-xl font-bold text-gray-800">{t("yourTickets")}</h2>
           {loading ? (
-            <p className="text-gray-500">Loading...</p>
+            <p className="text-gray-500">{tCommon("loading")}</p>
           ) : tickets.length === 0 ? (
-            <p className="text-gray-500">No tickets yet.</p>
+            <p className="text-gray-500">{t("noTickets")}</p>
           ) : (
             <ul className="space-y-4">
               {tickets.map((ticket) => (
@@ -163,7 +164,7 @@ export default function SupportPage() {
                           }`}
                         >
                           <p className="font-semibold text-gray-800">
-                            {reply.from === "admin" ? "Support team" : "You"}
+                            {reply.from === "admin" ? t("supportTeam") : t("you")}
                           </p>
                           <p className="mt-1 text-gray-600">{reply.message}</p>
                           <p className="mt-1 text-xs text-gray-400">
@@ -184,7 +185,7 @@ export default function SupportPage() {
 
         <p className="mt-6 text-center">
           <Link href="/" className="text-sm font-semibold text-purple-100 hover:text-white">
-            ← Back to home
+            ← {tAdmin("goHome")}
           </Link>
         </p>
       </div>

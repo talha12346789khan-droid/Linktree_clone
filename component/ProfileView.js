@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { useCallback, useRef } from "react";
 import { ToastContainer } from "react-toastify";
 import LinkIconComponent from "@/component/LinkIcon";
@@ -13,6 +14,7 @@ export default function ProfileView({
   initialReviews,
   initialSummary,
 }) {
+  const t = useTranslations("profile");
   const { handle, picture, links, userId, description, templateId } = profile;
   const theme = getTemplateById(templateId);
   const visibleLinks = getVisibleLinks(links || []);
@@ -92,7 +94,7 @@ export default function ProfileView({
               {description}
             </p>
           ) : (
-            <p className={`mt-1 text-sm ${theme.cardSub}`}>Link in bio</p>
+            <p className={`mt-1 text-sm ${theme.cardSub}`}>{t("linkInBio")}</p>
           )}
         </div>
 
@@ -121,7 +123,7 @@ export default function ProfileView({
             <div
               className={`rounded-lg py-6 text-center shadow-lg ${theme.card}`}
             >
-              <p className={theme.bio}>No links available</p>
+              <p className={theme.bio}>{t("noLinks")}</p>
             </div>
           )}
         </div>
@@ -141,7 +143,7 @@ export default function ProfileView({
             href="/support"
             className="text-sm font-semibold text-white/90 underline-offset-2 hover:text-white hover:underline"
           >
-            Need help? Contact customer support →
+            {t("needHelp")}
           </Link>
         </div>
       </div>

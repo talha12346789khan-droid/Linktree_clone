@@ -1,30 +1,34 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { marketingPrefixes } from "@/lib/navMenus";
-import { isProfilePath } from "@/lib/reservedRoutes";
+import { isProfilePath, stripLocaleFromPath } from "@/lib/reservedRoutes";
 
 const Footer = () => {
+  const t = useTranslations("footer");
   const pathname = usePathname();
+  const path = stripLocaleFromPath(pathname);
+
   const isMarketingPage = marketingPrefixes.some((prefix) =>
-    pathname?.startsWith(prefix)
+    path?.startsWith(prefix)
   );
   const isProfilePage = isProfilePath(pathname);
 
   const usePurpleTheme =
     isMarketingPage ||
     isProfilePage ||
-    pathname?.startsWith("/generate") ||
-    pathname?.startsWith("/auth") ||
-    pathname?.startsWith("/support") ||
-    pathname?.startsWith("/admin") ||
-    pathname?.startsWith("/analytics");
+    path?.startsWith("/generate") ||
+    path?.startsWith("/auth") ||
+    path?.startsWith("/support") ||
+    path?.startsWith("/admin") ||
+    path?.startsWith("/analytics");
 
   let footerClasses = "mt-auto px-4 py-4 text-center text-sm";
 
-  if (pathname === "/" || usePurpleTheme) {
+  if (path === "/" || usePurpleTheme) {
     footerClasses +=
-      pathname === "/"
+      path === "/"
         ? " bg-[#d2e823] text-cyan-800"
         : " bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600 text-purple-100";
   } else {
@@ -34,7 +38,7 @@ const Footer = () => {
 
   return (
     <footer className={footerClasses}>
-      <p>© 2026 Linktree-clone. All rights reserved.</p>
+      <p>{t("copyright")}</p>
     </footer>
   );
 };

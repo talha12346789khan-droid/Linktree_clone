@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useSession, signIn } from "next-auth/react";
 import { toast, ToastContainer } from "react-toastify";
 import { StarDisplay, StarInput } from "@/component/StarRating";
 
 export default function AppRatings() {
+  const t = useTranslations("appRatings");
+  const tCommon = useTranslations("common");
   const { status } = useSession();
   const [ratings, setRatings] = useState([]);
   const [summary, setSummary] = useState({
@@ -96,18 +99,15 @@ export default function AppRatings() {
       <div className="mx-auto max-w-4xl">
         <div className="mb-8 text-center">
           <h2 className="text-2xl font-bold text-cyan-900 md:text-4xl">
-            Rate our app
+            {t("title")}
           </h2>
-          <p className="mt-2 text-cyan-800/90 md:text-lg">
-            Share your experience with LinkTree Clone. Everyone can see ratings
-            here.
-          </p>
+          <p className="mt-2 text-cyan-800/90 md:text-lg">{t("subtitle")}</p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-5">
           <div className="rounded-xl bg-white p-6 shadow-lg lg:col-span-2">
             {loading ? (
-              <p className="text-gray-500">Loading ratings...</p>
+              <p className="text-gray-500">{tCommon("loading")}</p>
             ) : summary.count > 0 ? (
               <>
                 <p className="text-5xl font-bold text-cyan-900">
@@ -115,8 +115,7 @@ export default function AppRatings() {
                 </p>
                 <StarDisplay rating={summary.average} size="lg" />
                 <p className="mt-2 text-sm text-gray-600">
-                  Based on {summary.count} rating
-                  {summary.count !== 1 ? "s" : ""}
+                  {t("basedOn", { count: summary.count })}
                 </p>
                 <div className="mt-6 space-y-2">
                   {[5, 4, 3, 2, 1].map((stars) => {
@@ -140,9 +139,7 @@ export default function AppRatings() {
                 </div>
               </>
             ) : (
-              <p className="text-gray-500">
-                No ratings yet. Be the first to rate the app!
-              </p>
+              <p className="text-gray-500">{t("beFirst")}</p>
             )}
           </div>
 
@@ -151,12 +148,8 @@ export default function AppRatings() {
               onSubmit={submitRating}
               className="rounded-xl bg-white p-6 shadow-lg"
             >
-              <h3 className="text-lg font-bold text-gray-800">
-                Your rating
-              </h3>
-              <p className="mt-1 text-sm text-gray-500">
-                One rating per account. You can update or remove yours anytime.
-              </p>
+              <h3 className="text-lg font-bold text-gray-800">{t("yourRating")}</h3>
+              <p className="mt-1 text-sm text-gray-500">{t("onePerAccount")}</p>
               {status === "authenticated" ? (
                 <>
                   <div className="mt-4">
@@ -170,7 +163,7 @@ export default function AppRatings() {
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                     rows={3}
-                    placeholder="What do you like about LinkTree Clone? (min 10 characters)"
+                    placeholder={t("placeholder")}
                     className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-700"
                     disabled={submitting}
                   />
@@ -179,7 +172,7 @@ export default function AppRatings() {
                     disabled={submitting}
                     className="mt-4 w-full rounded-full bg-slate-700 py-3 text-sm font-bold text-white transition hover:bg-slate-800 disabled:opacity-60 sm:w-auto sm:px-8"
                   >
-                    {submitting ? "Submitting..." : "Submit rating"}
+                    {submitting ? t("submitting") : t("submitRating")}
                   </button>
                 </>
               ) : (
@@ -188,19 +181,19 @@ export default function AppRatings() {
                   onClick={() => signIn(undefined, { callbackUrl: "/" })}
                   className="mt-4 rounded-full bg-slate-700 px-6 py-3 text-sm font-bold text-white hover:bg-slate-800"
                 >
-                  Sign in to rate
+                  {t("signInToRate")}
                 </button>
               )}
             </form>
 
             <div className="rounded-xl bg-white p-6 shadow-lg">
               <h3 className="mb-4 text-lg font-bold text-gray-800">
-                What users are saying
+                {t("whatUsersSay")}
               </h3>
               {loading ? (
-                <p className="text-sm text-gray-500">Loading...</p>
+                <p className="text-sm text-gray-500">{tCommon("loading")}</p>
               ) : ratings.length === 0 ? (
-                <p className="text-sm text-gray-500">No reviews yet.</p>
+                <p className="text-sm text-gray-500">{t("noReviews")}</p>
               ) : (
                 <ul className="max-h-80 space-y-4 overflow-y-auto">
                   {ratings.map((item) => (
@@ -222,7 +215,7 @@ export default function AppRatings() {
                             disabled={deletingId === item.id}
                             className="shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold text-red-700 transition hover:bg-red-100 disabled:opacity-50"
                           >
-                            {deletingId === item.id ? "Deleting..." : "Delete"}
+                            {deletingId === item.id ? t("deleting") : tCommon("delete")}
                           </button>
                         )}
                       </div>

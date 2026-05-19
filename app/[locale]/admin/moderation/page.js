@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useSession, signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
+import { useSession } from "next-auth/react";
 import { toast, ToastContainer } from "react-toastify";
 
 export default function AdminModerationPage() {
+  const t = useTranslations("admin");
+  const tCommon = useTranslations("common");
+  const tNav = useTranslations("nav");
   const { status } = useSession();
   const router = useRouter();
   const [reports, setReports] = useState([]);
@@ -119,7 +122,7 @@ export default function AdminModerationPage() {
   if (status === "loading" || status === "unauthenticated") {
     return (
       <main className="flex flex-1 items-center justify-center bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600">
-        <p className="text-white">Loading...</p>
+        <p className="text-white">{tCommon("loading")}</p>
       </main>
     );
   }
@@ -127,10 +130,10 @@ export default function AdminModerationPage() {
   if (forbidden) {
     return (
       <main className="flex flex-1 flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600 p-6 text-center">
-        <h1 className="text-2xl font-bold text-white">Access denied</h1>
-        <p className="mt-2 text-purple-100">Admin email required.</p>
+        <h1 className="text-2xl font-bold text-white">{t("accessDenied")}</h1>
+        <p className="mt-2 text-purple-100">{t("adminEmailRequired")}</p>
         <Link href="/" className="mt-6 text-white underline">
-          Go home
+          {t("goHome")}
         </Link>
       </main>
     );
@@ -143,38 +146,36 @@ export default function AdminModerationPage() {
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-white md:text-3xl">
-              Moderation
+              {t("moderationTitle")}
             </h1>
-            <p className="text-purple-100 text-sm">
-              Review reports and manage banned users
-            </p>
+            <p className="text-purple-100 text-sm">{t("moderationSubtitle")}</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
               href="/admin/stats"
               className="rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30"
             >
-              Site stats →
+              {tNav("siteStats")} →
             </Link>
             <Link
               href="/admin/support"
               className="rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30"
             >
-              Support inbox →
+              {t("supportInbox")} →
             </Link>
           </div>
         </div>
 
         {loading ? (
-          <p className="text-white">Loading...</p>
+          <p className="text-white">{tCommon("loading")}</p>
         ) : (
           <>
             <section className="mb-8 rounded-xl bg-white p-5 shadow-xl">
               <h2 className="text-lg font-bold text-gray-800 mb-4">
-                Open review reports ({reports.length})
+                {t("openReportsTitle", { count: reports.length })}
               </h2>
               {reports.length === 0 ? (
-                <p className="text-sm text-gray-500">No open reports.</p>
+                <p className="text-sm text-gray-500">{t("noOpenReports")}</p>
               ) : (
                 <ul className="space-y-4">
                   {reports.map((r) => (
@@ -183,10 +184,10 @@ export default function AdminModerationPage() {
                       className="rounded-lg border border-gray-100 p-4"
                     >
                       <p className="text-xs text-gray-500">
-                        @{r.handle} · reported by {r.reporterName}
+                        @{r.handle} · {t("reportedBy")} {r.reporterName}
                         {r.reporterRole === "owner" && (
-                          <span className="ml-1 rounded bg-purple-100 px-1.5 py-0.5 font-semibold text-purple-800">
-                            profile owner
+                          <span className="ms-1 rounded bg-purple-100 px-1.5 py-0.5 font-semibold text-purple-800">
+                            {t("profileOwner")}
                           </span>
                         )}
                       </p>
@@ -205,21 +206,21 @@ export default function AdminModerationPage() {
                           onClick={() => resolveReport(r.id, "delete_review")}
                           className="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-bold text-white"
                         >
-                          Delete review
+                          {t("deleteReview")}
                         </button>
                         <button
                           type="button"
                           onClick={() => banFromReport(r)}
                           className="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-bold text-white"
                         >
-                          Ban author
+                          {t("banAuthor")}
                         </button>
                         <button
                           type="button"
                           onClick={() => resolveReport(r.id, "dismiss")}
                           className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold"
                         >
-                          Dismiss
+                          {t("dismiss")}
                         </button>
                       </div>
                     </li>
@@ -230,10 +231,10 @@ export default function AdminModerationPage() {
 
             <section className="mb-8 rounded-xl bg-white p-5 shadow-xl">
               <h2 className="text-lg font-bold text-gray-800 mb-4">
-                Banned users ({banned.length})
+                {t("bannedTitle", { count: banned.length })}
               </h2>
               {banned.length === 0 ? (
-                <p className="text-sm text-gray-500">No banned users.</p>
+                <p className="text-sm text-gray-500">{t("noBanned")}</p>
               ) : (
                 <ul className="space-y-2">
                   {banned.map((b) => (
@@ -252,7 +253,7 @@ export default function AdminModerationPage() {
                         onClick={() => unbanUser(b)}
                         className="rounded-lg border border-green-300 bg-green-50 px-3 py-1 text-xs font-semibold text-green-800"
                       >
-                        Unban
+                        {t("unban")}
                       </button>
                     </li>
                   ))}
@@ -261,14 +262,14 @@ export default function AdminModerationPage() {
             </section>
 
             <section className="rounded-xl bg-white p-5 shadow-xl">
-              <h2 className="text-lg font-bold text-gray-800 mb-4">Ban a user</h2>
+              <h2 className="text-lg font-bold text-gray-800 mb-4">{t("banUser")}</h2>
               <form onSubmit={banUser} className="space-y-3">
                 <input
                   value={banForm.userId}
                   onChange={(e) =>
                     setBanForm({ ...banForm, userId: e.target.value })
                   }
-                  placeholder="User ID (from report)"
+                  placeholder={t("userId")}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 />
                 <input
@@ -276,7 +277,7 @@ export default function AdminModerationPage() {
                   onChange={(e) =>
                     setBanForm({ ...banForm, userEmail: e.target.value })
                   }
-                  placeholder="User email"
+                  placeholder={t("userEmail")}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 />
                 <input
@@ -284,7 +285,7 @@ export default function AdminModerationPage() {
                   onChange={(e) =>
                     setBanForm({ ...banForm, userName: e.target.value })
                   }
-                  placeholder="Display name (optional)"
+                  placeholder={t("displayName")}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 />
                 <textarea
@@ -292,7 +293,7 @@ export default function AdminModerationPage() {
                   onChange={(e) =>
                     setBanForm({ ...banForm, reason: e.target.value })
                   }
-                  placeholder="Ban reason"
+                  placeholder={t("banReason")}
                   rows={2}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 />
@@ -300,7 +301,7 @@ export default function AdminModerationPage() {
                   type="submit"
                   className="w-full rounded-lg bg-red-600 py-2.5 text-sm font-bold text-white hover:bg-red-700"
                 >
-                  Ban user
+                  {t("banSubmit")}
                 </button>
               </form>
             </section>
