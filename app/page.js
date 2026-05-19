@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import AppRatings from "@/component/AppRatings";
 export default function Home() {
   const router = useRouter();
   const [text, setText] = useState("");
@@ -51,7 +52,8 @@ export default function Home() {
       />
     </div>
     </section>
-   
+
+    <AppRatings />
    </main>
   );
 }
