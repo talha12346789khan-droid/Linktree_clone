@@ -31,7 +31,7 @@ export default function ProfileView({
         <div className="mt-6 w-full space-y-3">
           {links?.length > 0 ? (
             links.map((linkItem, index) => (
-              <Link
+              <a
                 key={index}
                 href={`/api/track?h=${encodeURIComponent(handle)}&i=${index}`}
                 target="_blank"
@@ -44,7 +44,7 @@ export default function ProfileView({
                   </span>
                   <span>{linkItem.name}</span>
                 </div>
-              </Link>
+              </a>
             ))
           ) : (
             <div className="rounded-lg bg-white/90 py-6 text-center text-gray-600 shadow-lg">
