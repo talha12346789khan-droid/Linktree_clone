@@ -17,12 +17,13 @@ const Navbar = () => {
   const [searchResults, setSearchResults] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [userHandle, setUserHandle] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const searchRef = useRef(null)
   const profileRef = useRef(null)
   const router = useRouter()
   const { data: session, status } = useSession()
 
-  // Fetch user's handle on mount
+  // Fetch user's handle and admin status on mount
   useEffect(() => {
     if (status === 'authenticated') {
       const fetchUserHandle = async () => {
@@ -36,7 +37,19 @@ const Navbar = () => {
           console.error('Error fetching user handle:', error)
         }
       }
+      const fetchAdmin = async () => {
+        try {
+          const response = await fetch('/api/admin/check')
+          const data = await response.json()
+          setIsAdmin(!!data.isAdmin)
+        } catch {
+          setIsAdmin(false)
+        }
+      }
       fetchUserHandle()
+      fetchAdmin()
+    } else {
+      setIsAdmin(false)
     }
   }, [status])
 
@@ -224,6 +237,24 @@ const Navbar = () => {
                       ✏️ My Links
                     </button>
                   </Link>
+                  <Link href="/support">
+                    <button
+                      onClick={() => setIsProfileOpen(false)}
+                      className='w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded transition text-sm'
+                    >
+                      🆘 Support
+                    </button>
+                  </Link>
+                  {isAdmin && (
+                    <Link href="/admin/support">
+                      <button
+                        onClick={() => setIsProfileOpen(false)}
+                        className='w-full text-left px-4 py-2 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded transition text-sm font-semibold'
+                      >
+                        👑 Admin inbox
+                      </button>
+                    </Link>
+                  )}
                   <button
                     onClick={() => {
                       signOut({ callbackUrl: "/" })
@@ -326,6 +357,18 @@ const Navbar = () => {
                     ✏️ My Links
                   </button>
                 </Link>
+                <Link href="/support" className='block mb-1' onClick={() => setIsMenuOpen(false)}>
+                  <button className='cursor-pointer bg-slate-200 px-3 py-1 rounded text-xs w-full hover:bg-slate-300 transition'>
+                    🆘 Support
+                  </button>
+                </Link>
+                {isAdmin && (
+                  <Link href="/admin/support" className='block mb-1' onClick={() => setIsMenuOpen(false)}>
+                    <button className='cursor-pointer bg-purple-100 text-purple-800 px-3 py-1 rounded text-xs w-full hover:bg-purple-200 transition font-semibold'>
+                      👑 Admin inbox
+                    </button>
+                  </Link>
+                )}
                 <button 
                   onClick={() => {
                     signOut({ callbackUrl: "/" })

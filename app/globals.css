@@ -1,2 +1,7 @@
 @import "tailwindcss";
 
+@theme {
+  /* Clears fixed navbar (top-10 + logo height) on content pages */
+  --spacing-50: 12.5rem;
+}
+

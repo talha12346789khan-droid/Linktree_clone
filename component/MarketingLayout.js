@@ -3,7 +3,7 @@ import Link from "next/link";
 export function MarketingShell({ children }) {
   return (
     <main className="flex flex-1 flex-col bg-gradient-to-br from-purple-900 via-purple-800 to-pink-600 p-4 md:p-6">
-      <div className="mx-auto my-4 w-full max-w-4xl pt-20 md:my-10 md:pt-24">
+      <div className="mx-auto mb-6 w-full max-w-4xl mt-50 md:mb-10">
         {children}
       </div>
     </main>
