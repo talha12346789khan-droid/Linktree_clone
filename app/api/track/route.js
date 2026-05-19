@@ -13,41 +13,66 @@ function isAllowedRedirectUrl(url) {
   }
 }
 
-export async function GET(request) {
+async function resolveLink(handle, index) {
+  const client = await clientPromise;
+  const db = client.db("bittree");
+  const collection = db.collection("links");
+
+  const item = await collection.findOne({
+    handle: { $regex: `^${handle}$`, $options: "i" },
+  });
+
+  if (!item?.links || !item.links[index]) {
+    return { error: "not_found" };
+  }
+
+  const targetUrl = item.links[index].url?.trim();
+  if (!targetUrl || !isAllowedRedirectUrl(targetUrl)) {
+    return { error: "bad_url" };
+  }
+
+  return { item, targetUrl };
+}
+
+/**
+ * POST only — one count per real click (no prefetch).
+ * Client calls this, then opens returned url in a new tab.
+ */
+export async function POST(request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const handleRaw = searchParams.get("h");
-    const indexParam = searchParams.get("i");
-    const handle = normalizeHandle(handleRaw);
-    const index = parseInt(indexParam, 10);
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return Response.json({ success: false, message: "Invalid JSON" }, { status: 400 });
+    }
+
+    const handle = normalizeHandle(body.h ?? body.handle);
+    const index = parseInt(String(body.i ?? body.index), 10);
 
     if (!handle || Number.isNaN(index) || index < 0) {
-      return new Response("Invalid link", { status: 400 });
+      return Response.json({ success: false, message: "Invalid request" }, { status: 400 });
     }
 
+    const resolved = await resolveLink(handle, index);
+    if (resolved.error) {
+      return Response.json(
+        { success: false, message: "Link not found" },
+        { status: 404 }
+      );
+    }
+
+    const { item, targetUrl } = resolved;
     const client = await clientPromise;
-    const db = client.db("bittree");
-    const collection = db.collection("links");
-
-    const item = await collection.findOne({
-      handle: { $regex: `^${handle}$`, $options: "i" },
-    });
-
-    if (!item?.links || !item.links[index]) {
-      return new Response("Link not found", { status: 404 });
-    }
-
-    const targetUrl = item.links[index].url?.trim();
-    if (!targetUrl || !isAllowedRedirectUrl(targetUrl)) {
-      return new Response("Invalid destination", { status: 400 });
-    }
-
     const clickField = `analytics.linkClicks.${index}`;
-    await collection.updateOne({ _id: item._id }, { $inc: { [clickField]: 1 } });
+    await client
+      .db("bittree")
+      .collection("links")
+      .updateOne({ _id: item._id }, { $inc: { [clickField]: 1 } });
 
-    return Response.redirect(targetUrl, 302);
+    return Response.json({ success: true, url: targetUrl });
   } catch (error) {
-    console.error("Track click error:", error);
-    return new Response("Server error", { status: 500 });
+    console.error("Track POST error:", error);
+    return Response.json({ success: false, message: "Server error" }, { status: 500 });
   }
 }
