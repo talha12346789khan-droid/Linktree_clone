@@ -6,33 +6,19 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { toast, ToastContainer } from 'react-toastify'
+import { navMenus } from '@/lib/navMenus'
+import { DesktopNavDropdown, MobileNavDropdown } from '@/component/NavDropdown'
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const [isProductDropdown, setIsProductDropdown] = useState(false)
-  const [isTemplatesDropdown, setIsTemplatesDropdown] = useState(false)
-  const [isMarketplaceDropdown, setIsMarketplaceDropdown] = useState(false)
-  const [isLearnDropdown, setIsLearnDropdown] = useState(false)
-  const [isPricingDropdown, setIsPricingDropdown] = useState(false)
-  // Mobile dropdown states
-  const [isMobileProductDropdown, setIsMobileProductDropdown] = useState(false)
-  const [isMobileTemplatesDropdown, setIsMobileTemplatesDropdown] = useState(false)
-  const [isMobileMarketplaceDropdown, setIsMobileMarketplaceDropdown] = useState(false)
-  const [isMobileLearnDropdown, setIsMobileLearnDropdown] = useState(false)
-  const [isMobilePricingDropdown, setIsMobilePricingDropdown] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [userHandle, setUserHandle] = useState(null)
   const searchRef = useRef(null)
   const profileRef = useRef(null)
-  const productRef = useRef(null)
-  const templatesRef = useRef(null)
-  const marketplaceRef = useRef(null)
-  const learnRef = useRef(null)
-  const pricingRef = useRef(null)
   const router = useRouter()
   const { data: session, status } = useSession()
 
@@ -89,21 +75,6 @@ const Navbar = () => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setIsProfileOpen(false)
       }
-      if (productRef.current && !productRef.current.contains(event.target)) {
-        setIsProductDropdown(false)
-      }
-      if (templatesRef.current && !templatesRef.current.contains(event.target)) {
-        setIsTemplatesDropdown(false)
-      }
-      if (marketplaceRef.current && !marketplaceRef.current.contains(event.target)) {
-        setIsMarketplaceDropdown(false)
-      }
-      if (learnRef.current && !learnRef.current.contains(event.target)) {
-        setIsLearnDropdown(false)
-      }
-      if (pricingRef.current && !pricingRef.current.contains(event.target)) {
-        setIsPricingDropdown(false)
-      }
     }
 
     document.addEventListener('mousedown', handleClickOutside)
@@ -136,155 +107,9 @@ const Navbar = () => {
       {/* Menu Items - Hidden on mobile, visible on md and up */}
       <div className='hidden md:flex items-center ml-6 lg:ml-10 flex-1'>
         <ul className='flex gap-2 lg:gap-8 text-base lg:text-lg cursor-pointer'>
-          <li 
-            ref={productRef}
-            onMouseEnter={() => setIsProductDropdown(true)}
-            onMouseLeave={() => setIsProductDropdown(false)}
-            className='relative group'
-          >
-            <button
-              className='text-xs md:text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
-            >
-              Product
-              <svg className={`w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 transition-transform ${isProductDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
-              </svg>
-            </button>
-            
-            {isProductDropdown && (
-              <div 
-                onMouseEnter={() => setIsProductDropdown(true)}
-                onMouseLeave={() => setIsProductDropdown(false)}
-                className='absolute left-0 mt-0 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50'>
-                <ul className='py-2'>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>📱 Mobile App</li>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🌐 Web Platform</li>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🔧 Tools & Extensions</li>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer border-t'>📚 Documentation</li>
-                </ul>
-              </div>
-            )}
-          </li>
-
-          <li 
-            ref={templatesRef}
-            onMouseEnter={() => setIsTemplatesDropdown(true)}
-            onMouseLeave={() => setIsTemplatesDropdown(false)}
-            className='relative group'
-          >
-            <button
-              className='text-xs md:text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
-            >
-              Templates
-              <svg className={`w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 transition-transform ${isTemplatesDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
-              </svg>
-            </button>
-            
-            {isTemplatesDropdown && (
-              <div 
-                onMouseEnter={() => setIsTemplatesDropdown(true)}
-                onMouseLeave={() => setIsTemplatesDropdown(false)}
-                className='absolute left-0 mt-0 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50'>
-                <ul className='py-2'>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🎨 Creative</li>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>💼 Business</li>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🎵 Music & Audio</li>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer border-t'>🎬 Video & Media</li>
-                </ul>
-              </div>
-            )}
-          </li>
-
-          <li 
-            ref={marketplaceRef}
-            onMouseEnter={() => setIsMarketplaceDropdown(true)}
-            onMouseLeave={() => setIsMarketplaceDropdown(false)}
-            className='relative group'
-          >
-            <button
-              className='text-xs md:text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
-            >
-              Marketplace
-              <svg className={`w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 transition-transform ${isMarketplaceDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
-              </svg>
-            </button>
-            
-            {isMarketplaceDropdown && (
-              <div 
-                onMouseEnter={() => setIsMarketplaceDropdown(true)}
-                onMouseLeave={() => setIsMarketplaceDropdown(false)}
-                className='absolute left-0 mt-0 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50'>
-                <ul className='py-2'>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🎯 Featured</li>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>⭐ Top Rated</li>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🆕 New Releases</li>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer border-t'>💎 Premium</li>
-                </ul>
-              </div>
-            )}
-          </li>
-
-          <li 
-            ref={learnRef}
-            onMouseEnter={() => setIsLearnDropdown(true)}
-            onMouseLeave={() => setIsLearnDropdown(false)}
-            className='relative group'
-          >
-            <button
-              className='text-xs md:text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
-            >
-              Learn
-              <svg className={`w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 transition-transform ${isLearnDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
-              </svg>
-            </button>
-            
-            {isLearnDropdown && (
-              <div 
-                onMouseEnter={() => setIsLearnDropdown(true)}
-                onMouseLeave={() => setIsLearnDropdown(false)}
-                className='absolute left-0 mt-0 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50'>
-                <ul className='py-2'>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>📖 Tutorials</li>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🎓 Courses</li>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>❓ FAQ</li>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer border-t'>🆘 Support</li>
-                </ul>
-              </div>
-            )}
-          </li>
-
-          <li 
-            ref={pricingRef}
-            onMouseEnter={() => setIsPricingDropdown(true)}
-            onMouseLeave={() => setIsPricingDropdown(false)}
-            className='relative group'
-          >
-            <button
-              className='text-xs md:text-sm lg:text-lg hover:font-bold transition flex items-center gap-1'
-            >
-              Pricing
-              <svg className={`w-2.5 h-2.5 md:w-3 md:h-3 lg:w-4 lg:h-4 transition-transform ${isPricingDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
-              </svg>
-            </button>
-            
-            {isPricingDropdown && (
-              <div 
-                onMouseEnter={() => setIsPricingDropdown(true)}
-                onMouseLeave={() => setIsPricingDropdown(false)}
-                className='absolute left-0 mt-0 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50'>
-                <ul className='py-2'>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🆓 Free Plan</li>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>⭐ Starter</li>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer'>🚀 Pro</li>
-                  <li onClick={() => window.open('#', '_blank')} className='px-4 py-2 hover:bg-gray-100 transition cursor-pointer border-t'>👑 Enterprise</li>
-                </ul>
-              </div>
-            )}
-          </li>
+          {navMenus.map((menu) => (
+            <DesktopNavDropdown key={menu.key} menu={menu} />
+          ))}
         </ul>
       </div>
 
@@ -482,120 +307,13 @@ const Navbar = () => {
             ) : null}
           </div>
           <ul className='flex flex-col p-2 gap-2 text-sm cursor-pointer'>
-            {/* Product Dropdown Mobile */}
-            <li className='text-sm px-2 py-1 hover:bg-gray-100 rounded'>
-              <button 
-                onClick={() => setIsMobileProductDropdown(!isMobileProductDropdown)}
-                className='w-full text-left flex justify-between items-center hover:font-bold transition text-xs'
-              >
-                <span>Product</span>
-                <svg className={`w-3 h-3 transition-transform ${isMobileProductDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
-                </svg>
-              </button>
-              {isMobileProductDropdown && (
-                <div className='mt-1 bg-gray-50 rounded-lg overflow-hidden'>
-                  <ul className='py-1'>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileProductDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>📱 Mobile App</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileProductDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🌐 Web Platform</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileProductDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🔧 Tools & Extensions</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileProductDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs border-t'>📚 Documentation</li>
-                  </ul>
-                </div>
-              )}
-            </li>
-
-            {/* Templates Dropdown Mobile */}
-            <li className='text-sm px-2 py-1 hover:bg-gray-100 rounded'>
-              <button 
-                onClick={() => setIsMobileTemplatesDropdown(!isMobileTemplatesDropdown)}
-                className='w-full text-left flex justify-between items-center hover:font-bold transition text-xs'
-              >
-                <span>Templates</span>
-                <svg className={`w-3 h-3 transition-transform ${isMobileTemplatesDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
-                </svg>
-              </button>
-              {isMobileTemplatesDropdown && (
-                <div className='mt-1 bg-gray-50 rounded-lg overflow-hidden'>
-                  <ul className='py-1'>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileTemplatesDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🎨 Creative</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileTemplatesDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>💼 Business</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileTemplatesDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🎵 Music & Audio</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileTemplatesDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs border-t'>🎬 Video & Media</li>
-                  </ul>
-                </div>
-              )}
-            </li>
-
-            {/* Marketplace Dropdown Mobile */}
-            <li className='text-sm px-2 py-1 hover:bg-gray-100 rounded'>
-              <button 
-                onClick={() => setIsMobileMarketplaceDropdown(!isMobileMarketplaceDropdown)}
-                className='w-full text-left flex justify-between items-center hover:font-bold transition text-xs'
-              >
-                <span>Marketplace</span>
-                <svg className={`w-3 h-3 transition-transform ${isMobileMarketplaceDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
-                </svg>
-              </button>
-              {isMobileMarketplaceDropdown && (
-                <div className='mt-1 bg-gray-50 rounded-lg overflow-hidden'>
-                  <ul className='py-1'>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileMarketplaceDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🎯 Featured</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileMarketplaceDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>⭐ Top Rated</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileMarketplaceDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🆕 New Releases</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileMarketplaceDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs border-t'>💎 Premium</li>
-                  </ul>
-                </div>
-              )}
-            </li>
-
-            {/* Learn Dropdown Mobile */}
-            <li className='text-sm px-2 py-1 hover:bg-gray-100 rounded'>
-              <button 
-                onClick={() => setIsMobileLearnDropdown(!isMobileLearnDropdown)}
-                className='w-full text-left flex justify-between items-center hover:font-bold transition text-xs'
-              >
-                <span>Learn</span>
-                <svg className={`w-3 h-3 transition-transform ${isMobileLearnDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
-                </svg>
-              </button>
-              {isMobileLearnDropdown && (
-                <div className='mt-1 bg-gray-50 rounded-lg overflow-hidden'>
-                  <ul className='py-1'>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileLearnDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>📖 Tutorials</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileLearnDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🎓 Courses</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileLearnDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>❓ FAQ</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobileLearnDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs border-t'>🆘 Support</li>
-                  </ul>
-                </div>
-              )}
-            </li>
-
-            {/* Pricing Dropdown Mobile */}
-            <li className='text-sm px-2 py-1 hover:bg-gray-100 rounded'>
-              <button 
-                onClick={() => setIsMobilePricingDropdown(!isMobilePricingDropdown)}
-                className='w-full text-left flex justify-between items-center hover:font-bold transition text-xs'
-              >
-                <span>Pricing</span>
-                <svg className={`w-3 h-3 transition-transform ${isMobilePricingDropdown ? 'rotate-180' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 14l-7 7m0 0l-7-7m7 7V3' />
-                </svg>
-              </button>
-              {isMobilePricingDropdown && (
-                <div className='mt-1 bg-gray-50 rounded-lg overflow-hidden'>
-                  <ul className='py-1'>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobilePricingDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🆓 Free Plan</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobilePricingDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>⭐ Starter</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobilePricingDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs'>🚀 Pro</li>
-                    <li onClick={() => { window.open('#', '_blank'); setIsMobilePricingDropdown(false) }} className='px-2 py-1 hover:bg-gray-200 transition text-xs border-t'>👑 Enterprise</li>
-                  </ul>
-                </div>
-              )}
-            </li>
+            {navMenus.map((menu) => (
+              <MobileNavDropdown
+                key={menu.key}
+                menu={menu}
+                onNavigate={() => setIsMenuOpen(false)}
+              />
+            ))}
             <hr className='my-1' />
             {status === 'authenticated' ? (
               <div className='px-2 py-1.5'>
