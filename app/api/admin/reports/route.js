@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const session = await auth();
     if (!isAdminEmail(session?.user?.email)) {
-      return Response.json({ success: false, message: "Forbidden" }, { status: 403 });
+      return Response.json({ success: false, message: "Forbidden" }, { status: 403 }); 
     }
 
     const client = await clientPromise;
@@ -37,7 +37,8 @@ export async function GET() {
         createdAt: r.createdAt,
       })),
     });
-  } catch (error) {
+  }
+   catch (error) {
     console.error("Admin reports GET error:", error);
     return Response.json({ success: false, message: "Server error" }, { status: 500 });
   }
