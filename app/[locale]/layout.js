@@ -29,7 +29,7 @@ export const metadata = {
   verification: {
     google: "6K3CppAo8my14wPDGqfgIHU-2kw8o646p_MUzItTz1Y",
   },
-  title: "LinkTree Clone - Create Your Link in Bio",
+  title: "LinkTree Clone ",
   description:
     "Create your personal link in bio page with LinkTree Clone. Share all your important links in one place.",
   icons: {
