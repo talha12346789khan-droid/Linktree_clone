@@ -26,11 +26,11 @@ export function generateStaticParams() {
 }
 
 export const metadata = {
-  metadataBase: new URL("https://linktreeclone.com"),
+  metadataBase: new URL("https://linktree-clone-murex-chi.vercel.app"),
   verification: {
     google: "6K3CppAo8my14wPDGqfgIHU-2kw8o646p_MUzItTz1Y",
   },
-  title: "LinkTree Clone - Create Your Link in Bio | Share All Your Links",
+  title: "LinkTree Clone ",
   description:
     "Create your personal link in bio page with LinkTree Clone. Share all your important links from Instagram, TikTok, YouTube & more in one place. Free and easy!",
   keywords: [
@@ -45,7 +45,7 @@ export const metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://linktreeclone.com",
+    url: "https://linktree-clone-murex-chi.vercel.app",
     siteName: "LinkTree Clone",
     title: "LinkTree Clone - Create Your Link in Bio",
     description:
@@ -79,7 +79,7 @@ export const metadata = {
     "max-video-preview": -1,
   },
   alternates: {
-    canonical: "https://linktreeclone.com",
+    canonical: "https://linktree-clone-murex-chi.vercel.app",
   },
 };
 
