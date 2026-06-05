@@ -26,14 +26,60 @@ export function generateStaticParams() {
 }
 
 export const metadata = {
+  metadataBase: new URL("https://linktreeclone.com"),
   verification: {
     google: "6K3CppAo8my14wPDGqfgIHU-2kw8o646p_MUzItTz1Y",
   },
-  title: "LinkTree Clone ",
+  title: "LinkTree Clone - Create Your Link in Bio | Share All Your Links",
   description:
-    "Create your personal link in bio page with LinkTree Clone. Share all your important links in one place.",
+    "Create your personal link in bio page with LinkTree Clone. Share all your important links from Instagram, TikTok, YouTube & more in one place. Free and easy!",
+  keywords: [
+    "link in bio",
+    "linktree alternative",
+    "bio link",
+    "link management",
+    "social media links",
+    "profile links",
+  ],
+  authors: [{ name: "LinkTree Clone" }],
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://linktreeclone.com",
+    siteName: "LinkTree Clone",
+    title: "LinkTree Clone - Create Your Link in Bio",
+    description:
+      "Share all your important links in one place. 50M+ people use link-in-bio pages.",
+    images: [
+      {
+        url: "/images/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "LinkTree Clone - Link in Bio",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "LinkTree Clone - Create Your Link in Bio",
+    description:
+      "Share all your important links in one place. Create your link in bio now!",
+    images: ["/images/logo.png"],
+  },
   icons: {
     icon: "/images/logo.png",
+    apple: "/images/logo.png",
+  },
+  manifest: "/manifest.json",
+  robots: {
+    index: true,
+    follow: true,
+    "max-image-preview": "large",
+    "max-snippet": -1,
+    "max-video-preview": -1,
+  },
+  alternates: {
+    canonical: "https://linktreeclone.com",
   },
 };
 
