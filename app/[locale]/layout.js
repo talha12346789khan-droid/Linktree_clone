@@ -61,7 +61,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "LinkTree Clone - Create Your Link in Bio",
+    title: "LinkTree Clone ",
     description:
       "Share all your important links in one place. Create your link in bio now!",
     images: ["/images/logo.png"],
